@@ -1,0 +1,60 @@
+[gd_scene load_steps=4 format=3 uid="uid://bsavrfrgowwjy"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_p4pjj"]
+[ext_resource type="Theme" uid="uid://dt7yd8h3u1hqh" path="res://사다리타기.tres" id="2_l2p67"]
+[ext_resource type="PackedScene" uid="uid://dllxbmyyau3u5" path="res://int_edit/int_edit.tscn" id="2_r1kd0"]
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_p4pjj")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+fov = 90.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+
+[node name="왼쪽패널" type="VBoxContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+theme = ExtResource("2_l2p67")
+
+[node name="제목" type="Label" parent="왼쪽패널"]
+layout_mode = 2
+text = "사다리타기3D"
+
+[node name="참가자수" parent="왼쪽패널" instance=ExtResource("2_r1kd0")]
+layout_mode = 2
+limit_low = 3
+use_limit_low = true
+init_value = 4
+use_limit_high = true
+
+[node name="ScrollContainer" type="ScrollContainer" parent="왼쪽패널"]
+layout_mode = 2
+
+[node name="출발목록" type="VBoxContainer" parent="왼쪽패널/ScrollContainer"]
+layout_mode = 2
+
+[node name="오른쪽패널" type="VBoxContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+theme = ExtResource("2_l2p67")
+
+[node name="만들기" type="Button" parent="오른쪽패널"]
+layout_mode = 2
+text = "사다리만들기"
+
+[node name="풀기" type="Button" parent="오른쪽패널"]
+layout_mode = 2
+text = "사다리타기"
+
+[node name="깜빡이기" type="CheckButton" parent="오른쪽패널"]
+layout_mode = 2
+text = "깜빡이기"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="오른쪽패널"]
+layout_mode = 2
+
+[node name="도착목록" type="VBoxContainer" parent="오른쪽패널/ScrollContainer"]
+layout_mode = 2

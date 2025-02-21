@@ -1,0 +1,43 @@
+[gd_scene load_steps=4 format=3 uid="uid://dllxbmyyau3u5"]
+
+[ext_resource type="Script" path="res://int_edit/int_edit.gd" id="1_pkisn"]
+
+[sub_resource type="Theme" id="Theme_sqvoa"]
+
+[sub_resource type="Theme" id="Theme_pf1v3"]
+
+[node name="IntEdit" type="HBoxContainer"]
+offset_left = 343.0
+offset_right = 343.0
+offset_bottom = 145.0
+theme = SubResource("Theme_sqvoa")
+script = ExtResource("1_pkisn")
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+
+[node name="ValueLabel" type="Label" parent="."]
+layout_mode = 2
+text = "00:00"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme = SubResource("Theme_pf1v3")
+theme_override_constants/separation = -2
+alignment = 1
+
+[node name="IncButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = " ⇑ "
+
+[node name="DecButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = " ⇓ "
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="button_down" from="VBoxContainer/IncButton" to="." method="_on_inc_button_button_down"]
+[connection signal="button_up" from="VBoxContainer/IncButton" to="." method="_on_inc_button_button_up"]
+[connection signal="button_down" from="VBoxContainer/DecButton" to="." method="_on_dec_button_button_down"]
+[connection signal="button_up" from="VBoxContainer/DecButton" to="." method="_on_dec_button_button_up"]
