@@ -73,8 +73,10 @@ func 참가자추가하기() -> void:
 func LineEdit만들기(t :String, co :Color) -> LineEdit:
 	var rtn = LineEdit.new()
 	rtn.text = t
+	rtn.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	rtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	rtn.size_flags_vertical = Control.SIZE_EXPAND
+	rtn.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	rtn.max_length = 10
 	rtn.add_theme_color_override("font_color", co)
 	rtn.add_theme_color_override("font_outline_color",Color.WHITE)
 	rtn.add_theme_constant_override("outline_size",1)
@@ -87,7 +89,7 @@ func 기둥만들기(h :float, r :float, co :Color)->MeshInstance3D:
 	mesh.height = h
 	mesh.bottom_radius = r
 	mesh.top_radius = r
-	mesh.radial_segments = clampi( int(r*4) , 64, 360)
+	mesh.radial_segments = 8 #clampi( int(r*4) , 64, 360)
 	mesh.material = mat
 	var sp = MeshInstance3D.new()
 	sp.mesh = mesh
@@ -95,9 +97,11 @@ func 기둥만들기(h :float, r :float, co :Color)->MeshInstance3D:
 
 func 기둥위치정리하기() -> void:
 	var n := $"사다리".get_child_count()
+	var r := 15 * n
 	for i in n:
 		var o = $"사다리".get_child(i)
-		o.position = make_pos_by_rad_r_3d(2*PI*i/n, 100)
+		o.position = make_pos_by_rad_r_3d(2*PI*i/n, r)
+		o.mesh.height = n * 40
 
 func make_pos_by_rad_r_3d(rad:float, r :float, y :float =0)->Vector3:
 	return Vector3(sin(rad)*r, y, cos(rad)*r)
