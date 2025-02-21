@@ -60,30 +60,25 @@ func 참가자수변경() -> void:
 		$"사다리".remove_child(n)
 	for i in 참가자수.get_value():
 		참가자추가하기()
+	기둥위치정리하기()
 
 func 참가자추가하기() -> void:
 	var i = 참가자들.get_child_count()
 	참가자색.append(NamedColorList.color_list.pick_random()[0])
-	var 참가자 = LineEdit.new()
-	참가자.text = "출발%d" % [i+1]
-	참가자.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	참가자.size_flags_vertical = Control.SIZE_EXPAND
-	참가자.add_theme_color_override("font_color",참가자색[i])
-	참가자.add_theme_color_override("font_outline_color",Color.WHITE)
-	참가자.add_theme_constant_override("outline_size",1)
-	참가자들.add_child(참가자)
-	var 도착지점 = LineEdit.new()
-	도착지점.text = "도착%d" % [i+1]
-	도착지점.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	도착지점.size_flags_vertical = Control.SIZE_EXPAND
-	도착지점.add_theme_color_override("font_color",참가자색[i])
-	도착지점.add_theme_color_override("font_outline_color",Color.WHITE)
-	도착지점.add_theme_constant_override("outline_size",1)
-	도착지점들.add_child(도착지점)
-
+	참가자들.add_child(LineEdit만들기("출발%d" % [i+1], 참가자색[i]) )
+	도착지점들.add_child(LineEdit만들기("도착%d" % [i+1], 참가자색[i]) )
 	var 기둥 := 기둥만들기(300, 10, 참가자색[i])
 	$"사다리".add_child(기둥)
-	기둥.position = make_pos_by_rad_r_3d(2*PI*i/참가자색.size(), 100)
+
+func LineEdit만들기(t :String, co :Color) -> LineEdit:
+	var rtn = LineEdit.new()
+	rtn.text = t
+	rtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rtn.size_flags_vertical = Control.SIZE_EXPAND
+	rtn.add_theme_color_override("font_color", co)
+	rtn.add_theme_color_override("font_outline_color",Color.WHITE)
+	rtn.add_theme_constant_override("outline_size",1)
+	return rtn
 
 func 기둥만들기(h :float, r :float, co :Color)->MeshInstance3D:
 	var mat := StandardMaterial3D.new()
@@ -97,6 +92,12 @@ func 기둥만들기(h :float, r :float, co :Color)->MeshInstance3D:
 	var sp = MeshInstance3D.new()
 	sp.mesh = mesh
 	return sp
+
+func 기둥위치정리하기() -> void:
+	var n := $"사다리".get_child_count()
+	for i in n:
+		var o = $"사다리".get_child(i)
+		o.position = make_pos_by_rad_r_3d(2*PI*i/n, 100)
 
 func make_pos_by_rad_r_3d(rad:float, r :float, y :float =0)->Vector3:
 	return Vector3(sin(rad)*r, y, cos(rad)*r)
