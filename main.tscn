@@ -66,4 +66,6 @@ size_flags_vertical = 3
 [node name="도착목록" type="VBoxContainer" parent="오른쪽패널/Scroll도착"]
 layout_mode = 2
 
+[node name="사다리" type="Node3D" parent="."]
+
 [connection signal="value_changing" from="왼쪽패널/참가자수" to="." method="_on_참가자수_value_changing"]
