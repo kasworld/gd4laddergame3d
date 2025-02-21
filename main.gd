@@ -33,7 +33,6 @@ func _ready() -> void:
 	var r = min(vp_size.x,vp_size.y)/2
 	RenderingServer.set_default_clear_color( Global3d.colors.default_clear)
 
-
 	$DirectionalLight3D.position = Vector3(r,r,r)
 	$DirectionalLight3D.look_at(Vector3.ZERO)
 	$OmniLight3D.position = Vector3(r,-r,r)
@@ -57,6 +56,8 @@ func 참가자수변경() -> void:
 		참가자들.remove_child(n)
 	for n in 도착지점들.get_children():
 		도착지점들.remove_child(n)
+	for n in $"사다리".get_children():
+		$"사다리".remove_child(n)
 	for i in 참가자수.get_value():
 		참가자추가하기()
 
@@ -80,16 +81,37 @@ func 참가자추가하기() -> void:
 	도착지점.add_theme_constant_override("outline_size",1)
 	도착지점들.add_child(도착지점)
 
+	var 기둥 := 기둥만들기(300, 10, 참가자색[i])
+	$"사다리".add_child(기둥)
+	기둥.position = make_pos_by_rad_r_3d(2*PI*i/참가자색.size(), 100)
+
+func 기둥만들기(h :float, r :float, co :Color)->MeshInstance3D:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = co
+	var mesh = CylinderMesh.new()
+	mesh.height = h
+	mesh.bottom_radius = r
+	mesh.top_radius = r
+	mesh.radial_segments = clampi( int(r*4) , 64, 360)
+	mesh.material = mat
+	var sp = MeshInstance3D.new()
+	sp.mesh = mesh
+	return sp
+
+func make_pos_by_rad_r_3d(rad:float, r :float, y :float =0)->Vector3:
+	return Vector3(sin(rad)*r, y, cos(rad)*r)
+
 func 마지막참가자제거하기() -> void:
 	var 현재참가자수 = 참가자들.get_child_count()
 	if 현재참가자수 <= 0:
 		return
+	참가자색.pop_back()
 	var 마지막참가자 = 참가자들.get_child(현재참가자수-1)
 	참가자들.remove_child(마지막참가자)
 	var 마지막도착지 = 도착지점들.get_child(현재참가자수-1)
 	도착지점들.remove_child(마지막도착지)
-	참가자색.pop_back()
-
+	var 마지막기둥 = $"사다리".get_child(현재참가자수-1)
+	$"사다리".remove_child(마지막기둥)
 
 func reset_camera_pos()->void:
 	var vp_size = get_viewport().get_visible_rect().size

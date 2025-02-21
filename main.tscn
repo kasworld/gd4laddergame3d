@@ -8,11 +8,15 @@
 script = ExtResource("1_p4pjj")
 
 [node name="Camera3D" type="Camera3D" parent="."]
+keep_aspect = 0
 fov = 90.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+shadow_enabled = true
+sky_mode = 1
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
+shadow_enabled = true
 
 [node name="왼쪽패널" type="VBoxContainer" parent="."]
 offset_right = 40.0
