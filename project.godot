@@ -17,8 +17,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Global3d="*res://global/global3d.gd"
 NamedColorList="*res://global/named_color_list.gd"
+GlobalLib="*res://global/global_lib.gd"
 
 [display]
 
