@@ -87,11 +87,27 @@ func make_pos_by_rad_r_3d(rad:float, r :float, y :float =0)->Vector3:
 func 참가자추가하기() -> void:
 	var i = 참가자들.get_child_count()
 	참가자색.append(NamedColorList.color_list.pick_random()[0])
-	참가자들.add_child(LineEdit만들기("출발%d" % [i+1], 참가자색[i]) )
-	도착지점들.add_child(LineEdit만들기("도착%d" % [i+1], 참가자색[i]) )
+	var 참가자 = LineEdit만들기("출발%d" % [i+1], 참가자색[i])
+	참가자.text_changed.connect(
+		func(t :String):
+			참가자이름변경됨(i, t)
+	)
+	참가자들.add_child(참가자)
+
+	var 도착점 = LineEdit만들기("도착%d" % [i+1], 참가자색[i])
+	도착점.text_changed.connect(
+		func(t :String):
+			도착점이름변경됨(i, t)
+	)
+	도착지점들.add_child(도착점)
 	var 기둥 := 기둥만들기(300, 5, 참가자색[i])
 	$"사다리".add_child(기둥)
 	기둥위치정리하기()
+
+func 참가자이름변경됨(i :int, t :String) -> void:
+	pass
+func 도착점이름변경됨(i :int, t :String) -> void:
+	pass
 
 func 마지막참가자제거하기() -> void:
 	var 현재참가자수 = 참가자들.get_child_count()

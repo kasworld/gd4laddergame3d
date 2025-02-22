@@ -31,11 +31,11 @@ horizontal_alignment = 1
 
 [node name="참가자추가" type="Button" parent="왼쪽패널"]
 layout_mode = 2
-text = "Ins: 참가자 추가하기"
+text = "Ins:추가하기"
 
 [node name="참가자제거" type="Button" parent="왼쪽패널"]
 layout_mode = 2
-text = " Del: 참가자 제거하기"
+text = " Del: 제거하기"
 
 [node name="Scroll출발" type="ScrollContainer" parent="왼쪽패널"]
 layout_mode = 2
