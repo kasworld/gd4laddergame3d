@@ -92,12 +92,20 @@ func 참가자추가하기() -> void:
 		func(t :String):
 			참가자이름변경됨(i, t)
 	)
+	참가자.text_submitted.connect(
+		func(t :String):
+			참가자.release_focus()
+	)
 	참가자들.add_child(참가자)
 
 	var 도착점 = LineEdit만들기("도착%d" % [i+1], 참가자색[i])
 	도착점.text_changed.connect(
 		func(t :String):
 			도착점이름변경됨(i, t)
+	)
+	도착점.text_submitted.connect(
+		func(t :String):
+			도착점.release_focus()
 	)
 	도착지점들.add_child(도착점)
 	var 기둥 := 기둥만들기(300, 5, 참가자색[i])
