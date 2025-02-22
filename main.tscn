@@ -72,5 +72,15 @@ size_flags_horizontal = 3
 
 [node name="사다리" type="Node3D" parent="."]
 
+[node name="세로기둥" type="Node3D" parent="사다리"]
+
+[node name="가로연결길" type="Node3D" parent="사다리"]
+
+[node name="출발목록" type="Node3D" parent="사다리"]
+
+[node name="도착목록" type="Node3D" parent="사다리"]
+
+[node name="풀이길" type="Node3D" parent="사다리"]
+
 [connection signal="pressed" from="왼쪽패널/참가자추가" to="." method="_on_참가자추가_pressed"]
 [connection signal="pressed" from="왼쪽패널/참가자제거" to="." method="_on_참가자제거_pressed"]

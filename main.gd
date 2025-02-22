@@ -58,10 +58,10 @@ func 기둥만들기(h :float, r :float, co :Color)->MeshInstance3D:
 	return sp
 
 func 기둥위치정리하기() -> void:
-	var n := $"사다리".get_child_count()
+	var n := $"사다리/세로기둥".get_child_count()
 	var r := 10 * n
 	for i in n:
-		var o = $"사다리".get_child(i)
+		var o = $"사다리/세로기둥".get_child(i)
 		o.position = make_pos_by_rad_r_3d(2*PI*i/n, r)
 		o.mesh.height = n * 30
 
@@ -93,7 +93,7 @@ func 참가자추가하기() -> void:
 	)
 	도착지점들.add_child(도착점)
 	var 기둥 := 기둥만들기(300, 5, 참가자색[i])
-	$"사다리".add_child(기둥)
+	$"사다리/세로기둥".add_child(기둥)
 	기둥위치정리하기()
 
 func 참가자이름변경됨(i :int, t :String) -> void:
@@ -110,8 +110,8 @@ func 마지막참가자제거하기() -> void:
 	참가자들.remove_child(마지막참가자)
 	var 마지막도착지 = 도착지점들.get_child(현재참가자수-1)
 	도착지점들.remove_child(마지막도착지)
-	var 마지막기둥 = $"사다리".get_child(현재참가자수-1)
-	$"사다리".remove_child(마지막기둥)
+	var 마지막기둥 = $"사다리/세로기둥".get_child(현재참가자수-1)
+	$"사다리/세로기둥".remove_child(마지막기둥)
 	기둥위치정리하기()
 
 func reset_camera_pos()->void:
