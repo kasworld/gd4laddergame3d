@@ -44,6 +44,15 @@ func LineEdit만들기(t :String, co :Color) -> LineEdit:
 	rtn.add_theme_constant_override("outline_size",1)
 	return rtn
 
+func Label3D만들기(t :String, co :Color) -> Label3D:
+	var rtn = Label3D.new()
+	rtn.text = t
+	rtn.modulate = co
+	rtn.pixel_size = 0.5
+	#rtn.no_depth_test = true
+	rtn.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	return rtn
+
 func 기둥만들기(h :float, r :float, co :Color)->MeshInstance3D:
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = co
@@ -57,13 +66,17 @@ func 기둥만들기(h :float, r :float, co :Color)->MeshInstance3D:
 	sp.mesh = mesh
 	return sp
 
-func 기둥위치정리하기() -> void:
+func 위치3D정리하기() -> void:
 	var n := $"사다리/세로기둥".get_child_count()
 	var r := 10 * n
 	for i in n:
 		var o = $"사다리/세로기둥".get_child(i)
 		o.position = make_pos_by_rad_r_3d(2*PI*i/n, r)
 		o.mesh.height = n * 30
+		o = $"사다리/출발목록".get_child(i)
+		o.position = make_pos_by_rad_r_3d(2*PI*i/n, r, n * 15 + 10)
+		o = $"사다리/도착목록".get_child(i)
+		o.position = make_pos_by_rad_r_3d(2*PI*i/n, r, -n * 15 - 10)
 
 func make_pos_by_rad_r_3d(rad:float, r :float, y :float =0)->Vector3:
 	return Vector3(sin(rad)*r, y, cos(rad)*r)
@@ -94,12 +107,19 @@ func 참가자추가하기() -> void:
 	도착지점들.add_child(도착점)
 	var 기둥 := 기둥만들기(300, 5, 참가자색[i])
 	$"사다리/세로기둥".add_child(기둥)
-	기둥위치정리하기()
+	var 출발라벨 = Label3D만들기("출발%d" % [i+1], 참가자색[i])
+	$"사다리/출발목록".add_child(출발라벨)
+	var 도착라벨 = Label3D만들기("도착%d" % [i+1], 참가자색[i])
+	$"사다리/도착목록".add_child(도착라벨)
+
+	위치3D정리하기()
 
 func 참가자이름변경됨(i :int, t :String) -> void:
-	pass
+	var o = $"사다리/출발목록".get_child(i)
+	o.text = t
 func 도착점이름변경됨(i :int, t :String) -> void:
-	pass
+	var o = $"사다리/도착목록".get_child(i)
+	o.text = t
 
 func 마지막참가자제거하기() -> void:
 	var 현재참가자수 = 참가자들.get_child_count()
@@ -112,7 +132,7 @@ func 마지막참가자제거하기() -> void:
 	도착지점들.remove_child(마지막도착지)
 	var 마지막기둥 = $"사다리/세로기둥".get_child(현재참가자수-1)
 	$"사다리/세로기둥".remove_child(마지막기둥)
-	기둥위치정리하기()
+	위치3D정리하기()
 
 func reset_camera_pos()->void:
 	var vp_size = get_viewport().get_visible_rect().size
