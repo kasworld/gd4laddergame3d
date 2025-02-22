@@ -11,7 +11,7 @@ var 사다리자료 :사다리Lib
 
 func 사다리칸수() -> Vector2i:
 	var n = 참가자들.get_child_count()
-	return Vector2i(n, n*3 )
+	return Vector2i(n, n* Settings.가로길칸배수 )
 
 func _ready() -> void:
 	var vp_size = get_viewport().get_visible_rect().size
@@ -30,7 +30,7 @@ func _ready() -> void:
 		참가자추가하기()
 
 func 위치3D정리하기() -> void:
-	var n := $"사다리/세로기둥".get_child_count()
+	var n := 사다리칸수().x
 	var r := 10 * n
 	for i in n:
 		var o = $"사다리/세로기둥".get_child(i)
@@ -42,7 +42,7 @@ func 위치3D정리하기() -> void:
 		o.position = GlobalLib.make_pos_by_rad_r_3d(2*PI*i/n, r, -n * 15 - 10)
 
 func 참가자추가하기() -> void:
-	var i = 참가자들.get_child_count()
+	var i = 사다리칸수().x
 	if i >= Settings.최대칸수:
 		return
 	참가자색.append(NamedColorList.color_list.pick_random()[0])
@@ -72,7 +72,7 @@ func 참가자추가하기() -> void:
 	위치3D정리하기()
 
 func 마지막참가자제거하기() -> void:
-	var 현재참가자수 = 참가자들.get_child_count()
+	var 현재참가자수 = 사다리칸수().x
 	if 현재참가자수 <= Settings.최소칸수:
 		return
 	참가자색.pop_back()
