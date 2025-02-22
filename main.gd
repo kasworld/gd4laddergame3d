@@ -7,6 +7,8 @@ var 화살표 = preload("res://arrow3d/arrow3d.tscn")
 
 var 참가자색 :Array[Color]
 var camera_move = false
+var 사다리자료 :사다리Lib
+
 func 사다리칸수() -> Vector2i:
 	var n = 참가자들.get_child_count()
 	return Vector2i(n, n*3 )
@@ -15,20 +17,15 @@ func _ready() -> void:
 	var vp_size = get_viewport().get_visible_rect().size
 	var r = min(vp_size.x,vp_size.y)/2
 	RenderingServer.set_default_clear_color( GlobalLib.colors.default_clear)
-
 	$DirectionalLight3D.position = Vector3(r,r,r)
 	$DirectionalLight3D.look_at(Vector3.ZERO)
 	$OmniLight3D.position = Vector3(r,-r,r)
 	reset_camera_pos()
-
 	$"왼쪽패널".size = Vector2(vp_size.x/2 -r, vp_size.y)
 	$오른쪽패널.size = Vector2(vp_size.x/2 -r, vp_size.y)
 	$오른쪽패널.position = Vector2(vp_size.x/2 + r, 0)
-
 	$"왼쪽패널/Scroll출발".get_v_scroll_bar().scrolling.connect(_on_참가자_scroll_scroll_started)
 	$"오른쪽패널/Scroll도착".get_v_scroll_bar().scrolling.connect(_on_도착지점_scroll_scroll_started)
-	#$"사다리_Scroll".get_h_scroll_bar().scrolling.connect(_on_사다리_scroll_scroll_started)
-
 	for i in 4:
 		참가자추가하기()
 
@@ -50,39 +47,27 @@ func 참가자추가하기() -> void:
 	var 참가자 = GlobalLib.LineEdit만들기("출발%d" % [i+1], 참가자색[i])
 	참가자.text_changed.connect(
 		func(t :String):
-			참가자이름변경됨(i, t)
+			$"사다리/출발목록".get_child(i).text = t
 	)
 	참가자.text_submitted.connect(
 		func(t :String):
 			참가자.release_focus()
 	)
 	참가자들.add_child(참가자)
-
 	var 도착점 = GlobalLib.LineEdit만들기("도착%d" % [i+1], 참가자색[i])
 	도착점.text_changed.connect(
 		func(t :String):
-			도착점이름변경됨(i, t)
+			$"사다리/도착목록".get_child(i).text = t
 	)
 	도착점.text_submitted.connect(
 		func(t :String):
 			도착점.release_focus()
 	)
 	도착지점들.add_child(도착점)
-	var 기둥 := GlobalLib.기둥만들기(300, 5, 참가자색[i])
-	$"사다리/세로기둥".add_child(기둥)
-	var 출발라벨 = GlobalLib.Label3D만들기("출발%d" % [i+1], 참가자색[i])
-	$"사다리/출발목록".add_child(출발라벨)
-	var 도착라벨 = GlobalLib.Label3D만들기("도착%d" % [i+1], 참가자색[i])
-	$"사다리/도착목록".add_child(도착라벨)
-
+	$"사다리/세로기둥".add_child(GlobalLib.기둥만들기(300, 5, 참가자색[i]))
+	$"사다리/출발목록".add_child(GlobalLib.Label3D만들기("출발%d" % [i+1], 참가자색[i]))
+	$"사다리/도착목록".add_child(GlobalLib.Label3D만들기("도착%d" % [i+1], 참가자색[i]))
 	위치3D정리하기()
-
-func 참가자이름변경됨(i :int, t :String) -> void:
-	var o = $"사다리/출발목록".get_child(i)
-	o.text = t
-func 도착점이름변경됨(i :int, t :String) -> void:
-	var o = $"사다리/도착목록".get_child(i)
-	o.text = t
 
 func 마지막참가자제거하기() -> void:
 	var 현재참가자수 = 참가자들.get_child_count()
@@ -100,7 +85,6 @@ func 마지막참가자제거하기() -> void:
 func reset_camera_pos()->void:
 	var vp_size = get_viewport().get_visible_rect().size
 	var r = min(vp_size.x,vp_size.y)/2
-
 	$Camera3D.position = Vector3(1,1,r*1)
 	$Camera3D.look_at(Vector3.ZERO)
 
@@ -144,3 +128,6 @@ func _on_참가자_scroll_scroll_started() -> void:
 
 func _on_도착지점_scroll_scroll_started() -> void:
 	$"왼쪽패널/Scroll출발".scroll_vertical = $"오른쪽패널/Scroll도착".scroll_vertical
+
+func _on_만들기_pressed() -> void:
+	사다리자료 = 사다리Lib.new().만들기(사다리칸수())

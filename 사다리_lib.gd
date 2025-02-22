@@ -1,6 +1,6 @@
 extends Node
 
-class_name 사다리자료
+class_name 사다리Lib
 
 class 구성자료:
 	var 왼쪽연결길 :bool # 존재여부
@@ -28,7 +28,7 @@ func 보기():
 	for i in 칸수.x:
 		print(i, "->", 참가자위치[i])
 
-func 만들기(a칸수 :Vector2i) -> void:
+func 만들기(a칸수 :Vector2i) -> 사다리Lib:
 	칸수 = a칸수
 	# 초기화
 	풀이이동좌표 = []
@@ -70,3 +70,4 @@ func 만들기(a칸수 :Vector2i) -> void:
 				현재줄번호 = (현재줄번호+1) % 칸수.x
 				참가자위치[참가자번호] = 현재줄번호
 				continue
+	return self
