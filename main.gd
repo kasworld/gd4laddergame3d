@@ -33,13 +33,13 @@ func 위치3D정리하기() -> void:
 	var n := 사다리칸수().x
 	var r := 10 * n
 	for i in n:
+		var 각도 = 2*PI*i/n
+		var 길이 = n * 30
 		var o = $"사다리/세로기둥".get_child(i)
-		o.position = GlobalLib.make_pos_by_rad_r_3d(2*PI*i/n, r)
-		o.mesh.height = n * 30
-		o = $"사다리/출발목록".get_child(i)
-		o.position = GlobalLib.make_pos_by_rad_r_3d(2*PI*i/n, r, n * 15 + 10)
-		o = $"사다리/도착목록".get_child(i)
-		o.position = GlobalLib.make_pos_by_rad_r_3d(2*PI*i/n, r, -n * 15 - 10)
+		o.position = GlobalLib.make_pos_by_rad_r_3d(각도, r)
+		o.mesh.height = 길이
+		$"사다리/출발목록".get_child(i).position = GlobalLib.make_pos_by_rad_r_3d(각도, r, 길이/2 + 10)
+		$"사다리/도착목록".get_child(i).position = GlobalLib.make_pos_by_rad_r_3d(각도, r, -길이/2 - 10)
 
 func 참가자추가하기() -> void:
 	var i = 사다리칸수().x
@@ -76,11 +76,12 @@ func 마지막참가자제거하기() -> void:
 	if 현재참가자수 <= Settings.최소칸수:
 		return
 	참가자색.pop_back()
-	참가자들.remove_child(참가자들.get_child(현재참가자수-1))
-	도착지점들.remove_child(도착지점들.get_child(현재참가자수-1))
-	$"사다리/세로기둥".remove_child($"사다리/세로기둥".get_child(현재참가자수-1))
-	$"사다리/출발목록".remove_child($"사다리/출발목록".get_child(현재참가자수-1))
-	$"사다리/도착목록".remove_child($"사다리/도착목록".get_child(현재참가자수-1))
+	var 마지막수 = 현재참가자수-1
+	참가자들.remove_child(참가자들.get_child(마지막수))
+	도착지점들.remove_child(도착지점들.get_child(마지막수))
+	$"사다리/세로기둥".remove_child($"사다리/세로기둥".get_child(마지막수))
+	$"사다리/출발목록".remove_child($"사다리/출발목록".get_child(마지막수))
+	$"사다리/도착목록".remove_child($"사다리/도착목록".get_child(마지막수))
 	위치3D정리하기()
 
 func reset_camera_pos()->void:
