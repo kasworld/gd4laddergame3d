@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://bsavrfrgowwjy"]
+[gd_scene load_steps=3 format=3 uid="uid://bsavrfrgowwjy"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_p4pjj"]
 [ext_resource type="Theme" uid="uid://dt7yd8h3u1hqh" path="res://사다리타기.tres" id="2_l2p67"]
-[ext_resource type="PackedScene" uid="uid://dllxbmyyau3u5" path="res://int_edit/int_edit.tscn" id="2_r1kd0"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_p4pjj")
@@ -30,16 +29,13 @@ layout_mode = 2
 text = "사다리타기3D"
 horizontal_alignment = 1
 
-[node name="참가자수" parent="왼쪽패널" instance=ExtResource("2_r1kd0")]
+[node name="참가자추가" type="Button" parent="왼쪽패널"]
 layout_mode = 2
-alignment = 1
-limit_low = 3
-use_limit_low = true
-init_value = 4
-use_limit_high = true
+text = "Ins: 참가자 추가하기"
 
-[node name="Label" type="Label" parent="왼쪽패널"]
+[node name="참가자제거" type="Button" parent="왼쪽패널"]
 layout_mode = 2
+text = " Del: 참가자 제거하기"
 
 [node name="Scroll출발" type="ScrollContainer" parent="왼쪽패널"]
 layout_mode = 2
@@ -76,4 +72,5 @@ size_flags_horizontal = 3
 
 [node name="사다리" type="Node3D" parent="."]
 
-[connection signal="value_changing" from="왼쪽패널/참가자수" to="." method="_on_참가자수_value_changing"]
+[connection signal="pressed" from="왼쪽패널/참가자추가" to="." method="_on_참가자추가_pressed"]
+[connection signal="pressed" from="왼쪽패널/참가자제거" to="." method="_on_참가자제거_pressed"]

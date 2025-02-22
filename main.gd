@@ -1,6 +1,5 @@
 extends Node3D
 
-@onready var 참가자수 = $"왼쪽패널/참가자수"
 @onready var 참가자들 = $"왼쪽패널/Scroll출발/출발목록"
 @onready var 도착지점들 = $"오른쪽패널/Scroll도착/도착목록"
 
@@ -22,9 +21,9 @@ var 사다리자료 :Array
 var 참가자색 :Array[Color]
 var 참가자위치 :Array # [참가자] = 도착지
 var 풀이이동좌표 :Array  # [참가자][vector2]
-
 func 사다리칸수() -> Vector2i:
-	return Vector2i(참가자수.get_value(), 참가자수.get_value()*3 )
+	var n = 참가자들.get_child_count()
+	return Vector2i(n, n*3 )
 
 var camera_move = false
 
@@ -46,29 +45,8 @@ func _ready() -> void:
 	$"오른쪽패널/Scroll도착".get_v_scroll_bar().scrolling.connect(_on_도착지점_scroll_scroll_started)
 	#$"사다리_Scroll".get_h_scroll_bar().scrolling.connect(_on_사다리_scroll_scroll_started)
 
-	var fsize = preload("res://사다리타기.tres").default_font_size
-	참가자수.init(0,"참가자수 ",fsize)
-	참가자수변경()
-
-func 참가자수변경() -> void:
-	참가자색 = []
-	for n in 참가자들.get_children():
-		참가자들.remove_child(n)
-	for n in 도착지점들.get_children():
-		도착지점들.remove_child(n)
-	for n in $"사다리".get_children():
-		$"사다리".remove_child(n)
-	for i in 참가자수.get_value():
+	for i in 4:
 		참가자추가하기()
-	기둥위치정리하기()
-
-func 참가자추가하기() -> void:
-	var i = 참가자들.get_child_count()
-	참가자색.append(NamedColorList.color_list.pick_random()[0])
-	참가자들.add_child(LineEdit만들기("출발%d" % [i+1], 참가자색[i]) )
-	도착지점들.add_child(LineEdit만들기("도착%d" % [i+1], 참가자색[i]) )
-	var 기둥 := 기둥만들기(300, 10, 참가자색[i])
-	$"사다리".add_child(기둥)
 
 func LineEdit만들기(t :String, co :Color) -> LineEdit:
 	var rtn = LineEdit.new()
@@ -97,18 +75,27 @@ func 기둥만들기(h :float, r :float, co :Color)->MeshInstance3D:
 
 func 기둥위치정리하기() -> void:
 	var n := $"사다리".get_child_count()
-	var r := 15 * n
+	var r := 10 * n
 	for i in n:
 		var o = $"사다리".get_child(i)
 		o.position = make_pos_by_rad_r_3d(2*PI*i/n, r)
-		o.mesh.height = n * 40
+		o.mesh.height = n * 30
 
 func make_pos_by_rad_r_3d(rad:float, r :float, y :float =0)->Vector3:
 	return Vector3(sin(rad)*r, y, cos(rad)*r)
 
+func 참가자추가하기() -> void:
+	var i = 참가자들.get_child_count()
+	참가자색.append(NamedColorList.color_list.pick_random()[0])
+	참가자들.add_child(LineEdit만들기("출발%d" % [i+1], 참가자색[i]) )
+	도착지점들.add_child(LineEdit만들기("도착%d" % [i+1], 참가자색[i]) )
+	var 기둥 := 기둥만들기(300, 5, 참가자색[i])
+	$"사다리".add_child(기둥)
+	기둥위치정리하기()
+
 func 마지막참가자제거하기() -> void:
 	var 현재참가자수 = 참가자들.get_child_count()
-	if 현재참가자수 <= 0:
+	if 현재참가자수 <= 3:
 		return
 	참가자색.pop_back()
 	var 마지막참가자 = 참가자들.get_child(현재참가자수-1)
@@ -117,6 +104,7 @@ func 마지막참가자제거하기() -> void:
 	도착지점들.remove_child(마지막도착지)
 	var 마지막기둥 = $"사다리".get_child(현재참가자수-1)
 	$"사다리".remove_child(마지막기둥)
+	기둥위치정리하기()
 
 func reset_camera_pos()->void:
 	var vp_size = get_viewport().get_visible_rect().size
@@ -141,6 +129,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			_on_끝내기_pressed()
 		elif event.keycode == KEY_ENTER:
 			_on_시야바꾸기_pressed()
+		elif event.keycode == KEY_INSERT:
+			참가자추가하기()
+		elif event.keycode == KEY_DELETE:
+			마지막참가자제거하기()
 
 func _on_시야바꾸기_pressed() -> void:
 	camera_move = !camera_move
@@ -150,8 +142,11 @@ func _on_시야바꾸기_pressed() -> void:
 func _on_끝내기_pressed() -> void:
 	get_tree().quit()
 
-func _on_참가자수_value_changing(_idx: int) -> void:
-	참가자수변경()
+func _on_참가자추가_pressed() -> void:
+	참가자추가하기()
+
+func _on_참가자제거_pressed() -> void:
+	마지막참가자제거하기()
 
 func _on_참가자_scroll_scroll_started() -> void:
 	$"오른쪽패널/Scroll도착".scroll_vertical = $"왼쪽패널/Scroll출발".scroll_vertical
