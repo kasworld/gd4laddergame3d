@@ -11,7 +11,6 @@ var 참가자색 :Array[Color]
 var camera_move = false
 var 사다리자료 :사다리Lib
 
-
 func _ready() -> void:
 	var vp_size = get_viewport().get_visible_rect().size
 	var r = min(vp_size.x,vp_size.y)/2
@@ -53,7 +52,7 @@ func 참가자추가하기() -> void:
 			도착점.release_focus()
 	)
 	도착지점들.add_child(도착점)
-	$"사다리/세로기둥".add_child(GlobalLib.기둥만들기(300, 5, 참가자색[i]))
+	$"사다리/세로기둥".add_child(GlobalLib.기둥만들기(30, 기둥두께, 참가자색[i]))
 	$"사다리/출발목록".add_child(GlobalLib.Label3D만들기("출발%d" % [i+1], 참가자색[i]))
 	$"사다리/도착목록".add_child(GlobalLib.Label3D만들기("도착%d" % [i+1], 참가자색[i]))
 	위치3D정리하기()
@@ -71,11 +70,12 @@ func 마지막참가자제거하기() -> void:
 	$"사다리/도착목록".remove_child($"사다리/도착목록".get_child(마지막수))
 	위치3D정리하기()
 
+const 기둥두께 = 3
 func 사다리용숫자들() -> Dictionary:
 	var rtn := {}
 	rtn.세로줄수 = 참가자들.get_child_count()
 	rtn.가로줄수 = rtn.세로줄수 *Settings.가로길칸배수
-	rtn.중심과의거리 = 10.0 * rtn.세로줄수
+	rtn.중심과의거리 = 30.0 * sqrt(rtn.세로줄수)
 	rtn.기둥간각도 = 2.0*PI/rtn.세로줄수
 	rtn.기둥길이 = rtn.세로줄수 * 30.0
 	rtn.가로줄간거리 = rtn.기둥길이/rtn.가로줄수
@@ -122,7 +122,7 @@ func 사다리문제그리기() -> void:
 	for y in 사다리수.가로줄수:
 		for x in 사다리수.세로줄수+1:
 			if 사다리자료.자료[x%사다리수.세로줄수][y].왼쪽연결길:
-				var 가로줄 = GlobalLib.기둥만들기(사다리수.세로줄간거리, 5, Color.WHITE)
+				var 가로줄 = GlobalLib.기둥만들기(사다리수.세로줄간거리, 기둥두께, Color.WHITE)
 				가로줄.rotate_z(PI/2)
 				가로줄.rotate_y(사다리수.기둥간각도 * (x+0.5))
 				가로줄.position = 가로줄위치(x,y)
