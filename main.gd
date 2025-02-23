@@ -39,7 +39,7 @@ func 참가자추가하기() -> void:
 			$"사다리/출발목록".get_child(i).text = t
 	)
 	참가자.text_submitted.connect(
-		func(t :String):
+		func(_t :String):
 			참가자.release_focus()
 	)
 	참가자들.add_child(참가자)
@@ -49,7 +49,7 @@ func 참가자추가하기() -> void:
 			$"사다리/도착목록".get_child(i).text = t
 	)
 	도착점.text_submitted.connect(
-		func(t :String):
+		func(_t :String):
 			도착점.release_focus()
 	)
 	도착지점들.add_child(도착점)
@@ -79,6 +79,7 @@ func 사다리용숫자들() -> Dictionary:
 	rtn.기둥간각도 = 2.0*PI/rtn.세로줄수
 	rtn.기둥길이 = rtn.세로줄수 * 30.0
 	rtn.가로줄간거리 = rtn.기둥길이/rtn.가로줄수
+	rtn.세로줄간거리 = rtn.중심과의거리 * sin(rtn.기둥간각도/2) *2
 	return rtn
 
 func 위치3D정리하기() -> void:
@@ -99,20 +100,17 @@ func 세로줄위치(x :int, y :int) -> Vector3:
 	var p = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리, 길이)
 	return p
 
-func 가로화살표길이() -> float:
-	return (세로줄위치(0,0)-세로줄위치(1,0)).length()
-
 # 중점을 돌려준다.
 func 가로줄위치(x :int, y :int) -> Vector3:
 	var 사다리수 = 사다리용숫자들()
 	var 각도 = 사다리수.기둥간각도 * (x+0.5)
 	var 길이 = 사다리수.가로줄간거리 * y
-	var p = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리, 길이)
+	var p = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리, 길이- 사다리수.기둥길이/2)
 	return p
 
 func 사다리문제그리기() -> void:
 	var 사다리수 = 사다리용숫자들()
-	사다리자료 = 사다리Lib.new().만들기(사다리수.세로줄수)
+	사다리자료 = 사다리Lib.new().만들기( Vector2i(사다리수.세로줄수, 사다리수.가로줄수 ) )
 	for i in 참가자들.get_child_count():
 		참가자들.get_child(i).add_theme_color_override("font_uneditable_color", 참가자색[i])
 		참가자들.get_child(i).editable = false
@@ -120,12 +118,13 @@ func 사다리문제그리기() -> void:
 
 	for n in 사다리문제.get_children():
 		사다리문제.remove_child(n)
-	var 가로화살표길이 = 가로화살표길이()
 
 	for y in 사다리수.가로줄수:
 		for x in 사다리수.세로줄수+1:
 			if 사다리자료.자료[x%사다리수.세로줄수][y].왼쪽연결길:
-				var 가로줄 = GlobalLib.기둥만들기(가로화살표길이, 5, Color.WHITE)
+				var 가로줄 = GlobalLib.기둥만들기(사다리수.세로줄간거리, 5, Color.WHITE)
+				가로줄.rotate_z(PI/2)
+				가로줄.rotate_y(사다리수.기둥간각도 * (x+0.5))
 				가로줄.position = 가로줄위치(x,y)
 				사다리문제.add_child(가로줄)
 
