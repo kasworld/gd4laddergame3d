@@ -15,10 +15,6 @@ func _ready() -> void:
 	var vp_size = get_viewport().get_visible_rect().size
 	var r = min(vp_size.x,vp_size.y)/2
 	RenderingServer.set_default_clear_color( GlobalLib.colors.default_clear)
-	$DirectionalLight3D.position = Vector3(r,r,r)
-	$DirectionalLight3D.look_at(Vector3.ZERO)
-	$OmniLight3D.position = Vector3(r,-r,r)
-	reset_camera_pos()
 	$"왼쪽패널".size = Vector2(vp_size.x/2 -r, vp_size.y)
 	$오른쪽패널.size = Vector2(vp_size.x/2 -r, vp_size.y)
 	$오른쪽패널.position = Vector2(vp_size.x/2 + r, 0)
@@ -26,6 +22,7 @@ func _ready() -> void:
 	$"오른쪽패널/Scroll도착".get_v_scroll_bar().scrolling.connect(_on_도착지점_scroll_scroll_started)
 	for i in Settings.시작칸수:
 		참가자추가하기()
+	reset_camera_pos()
 
 func 참가자추가하기() -> void:
 	var i = 사다리용숫자들().세로줄수
@@ -96,16 +93,16 @@ func 위치3D정리하기() -> void:
 		$"사다리/도착목록".get_child(i).position = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리, -사다리수.기둥길이/2 - 10)
 
 # 중점을 돌려준다.
-func 세로줄위치(x :int, y :int) -> Vector3:
+func 세로화살표위치(x :int, y :int) -> Vector3:
 	var 사다리수 = 사다리용숫자들()
 	var p = GlobalLib.make_pos_by_rad_r_3d(
 		사다리수.기둥간각도*x,
 		사다리수.중심과의거리,
-		사다리수.기둥길이 / 사다리수.가로줄수 * (y +0.5) )
+		사다리수.기둥길이 / 사다리수.가로줄수 * (y ) -사다리수.기둥길이/2)
 	return p
 
 # 중점을 돌려준다.
-func 가로줄위치(x :int, y :int) -> Vector3:
+func 가로화살표위치(x :int, y :int) -> Vector3:
 	var 사다리수 = 사다리용숫자들()
 	var p = GlobalLib.make_pos_by_rad_r_3d(
 		사다리수.기둥간각도 * (x+0.5),
@@ -130,7 +127,7 @@ func 사다리문제그리기() -> void:
 				var 가로줄 = GlobalLib.기둥만들기(사다리수.세로줄간거리, 기둥반지름, Color.WHITE)
 				가로줄.rotate_z(PI/2)
 				가로줄.rotate_y(사다리수.기둥간각도 * (x+0.5))
-				가로줄.position = 가로줄위치(x,y)
+				가로줄.position = 가로화살표위치(x,y)
 				사다리문제.add_child(가로줄)
 
 	#사다리문제.visible = true
@@ -158,33 +155,33 @@ func 사다리풀이그리기() -> void:
 		# 아래로 내려가면서 좌우로 이동
 		var oldy = 0
 		# 시작 세로줄 그리기
-		사다리자료.풀이이동좌표[참가자번호].append([화살표방향.아래쪽, 세로줄위치(현재줄번호,0), 가로줄위치(현재줄번호,0)])
+		사다리자료.풀이이동좌표[참가자번호].append([화살표방향.아래쪽, 세로화살표위치(현재줄번호,0), 세로화살표위치(현재줄번호,0.5)])
 		for y in 사다리수.가로줄수:
 			if 사다리자료.자료[현재줄번호][y].왼쪽연결길 == true: # 왼쪽으로 한칸 이동
 				# 현재까지의 세로줄 그리기
-				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.아래쪽, 가로줄위치(현재줄번호,oldy), 가로줄위치(현재줄번호,y)])
+				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.아래쪽, 세로화살표위치(현재줄번호,oldy), 세로화살표위치(현재줄번호,y)])
 				#왼쪽 화살표
 				현재줄번호 = (현재줄번호-1+사다리수.세로줄수)%사다리수.세로줄수
-				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.왼쪽, 가로줄위치(현재줄번호+1,y)-사다리수.가로화살표위치보정, 가로줄위치(현재줄번호,y)-사다리수.가로화살표위치보정])
+				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.왼쪽, 가로화살표위치(현재줄번호+1,y)-사다리수.가로화살표위치보정, 가로화살표위치(현재줄번호,y)-사다리수.가로화살표위치보정])
 				oldy = y
 				continue
 			if 사다리자료.자료[(현재줄번호+1)%사다리수.세로줄수][y].왼쪽연결길 == true: # 오른쪽으로 한칸 이동
 				# 현재까지의 세로줄 그리기
-				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.아래쪽, 가로줄위치(현재줄번호,oldy), 가로줄위치(현재줄번호,y)])
+				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.아래쪽, 세로화살표위치(현재줄번호,oldy), 세로화살표위치(현재줄번호,y)])
 				# 오른쪽 화살표
 				현재줄번호 = (현재줄번호+1+사다리수.세로줄수)%사다리수.세로줄수
-				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.오른쪽, 가로줄위치(현재줄번호-1,y)+사다리수.가로화살표위치보정, 가로줄위치(현재줄번호,y)+사다리수.가로화살표위치보정])
+				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.오른쪽, 가로화살표위치(현재줄번호-1,y)+사다리수.가로화살표위치보정, 가로화살표위치(현재줄번호,y)+사다리수.가로화살표위치보정])
 				oldy = y
 				continue
 		# 나머지 끝까지 그린다.
-		사다리자료.풀이이동좌표[참가자번호].append([화살표방향.아래쪽, 가로줄위치(현재줄번호,oldy), 가로줄위치(현재줄번호,사다리수.가로줄수)-사다리수.세로화살표위치보정])
+		사다리자료.풀이이동좌표[참가자번호].append([화살표방향.아래쪽, 세로화살표위치(현재줄번호,oldy), 세로화살표위치(현재줄번호,사다리수.가로줄수)+사다리수.세로화살표위치보정])
 
 	for 참가자번호 in 사다리자료.풀이이동좌표.size():
 		for poss in 사다리자료.풀이이동좌표[참가자번호]:
 			var 방향 = poss[0]
 			p1 = poss[1]
 			p2 = poss[2]
-			var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름,기둥반지름*2 )
+			var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
 			match 방향:
 				화살표방향.아래쪽:
 					a.rotate_z(PI)
@@ -202,19 +199,24 @@ func 사다리풀이그리기() -> void:
 
 
 func reset_camera_pos()->void:
-	var vp_size = get_viewport().get_visible_rect().size
-	var r = min(vp_size.x,vp_size.y)/2
+	var 사다리수 = 사다리용숫자들()
+	var r = 사다리수.중심과의거리 *3
 	$Camera3D.position = Vector3(1,1,r*1)
 	$Camera3D.look_at(Vector3.ZERO)
+	$DirectionalLight3D.position = Vector3(r,r,r)
+	$DirectionalLight3D.look_at(Vector3.ZERO)
+	$OmniLight3D.position = Vector3(r,-r,r)
 
 func _process(_delta: float) -> void:
 	var t = Time.get_unix_time_from_system() /-3.0
 	if camera_move:
-		var vp_size = get_viewport().get_visible_rect().size
-		var r = min(vp_size.x,vp_size.y)/2
-		$Camera3D.position = Vector3(sin(t)*r, cos(t)*r, r*0.6  )
-		$Camera3D.look_at(Vector3(sin(t)*r/2, cos(t)*r/2, 0) )
-		#$Camera3D.look_at(Vector3.ZERO)
+		var 사다리수 = 사다리용숫자들()
+		var r = 사다리수.중심과의거리 *3
+		var 길이 = 사다리수.기둥길이
+		$Camera3D.position = Vector3(sin(t)*r, sin(t)*길이 , cos(t)*r   )
+		$Camera3D.look_at(Vector3.ZERO)
+		$DirectionalLight3D.position = Vector3(sin(t)*r, cos(t)*길이 , cos(t)*r   )
+		$DirectionalLight3D.look_at(Vector3.ZERO)
 
 # esc to exit
 func _unhandled_input(event: InputEvent) -> void:
