@@ -16,7 +16,7 @@ class 구성자료:
 # Array[참가자수][참가자수*4]사다리구성자료
 var 자료 :Array
 var 참가자위치 :Array # [참가자] = 도착지
-var 풀이이동좌표 :Array  # [참가자][vector2]
+var 풀이이동좌표 :Array  # [참가자][ [vector3,vector3] ]
 var 칸수 :Vector2i
 
 func 보기():
