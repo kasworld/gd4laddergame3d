@@ -162,7 +162,7 @@ func 사다리풀이그리기() -> void:
 				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.아래쪽, 세로화살표위치(현재줄번호,oldy), 세로화살표위치(현재줄번호,y)])
 				#왼쪽 화살표
 				현재줄번호 = (현재줄번호-1+사다리수.세로줄수)%사다리수.세로줄수
-				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.왼쪽, 가로화살표위치(현재줄번호+1,y)-사다리수.가로화살표위치보정, 가로화살표위치(현재줄번호,y)-사다리수.가로화살표위치보정])
+				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.왼쪽, 가로화살표위치(현재줄번호+1,y), 가로화살표위치(현재줄번호,y)])
 				oldy = y
 				continue
 			if 사다리자료.자료[(현재줄번호+1)%사다리수.세로줄수][y].왼쪽연결길 == true: # 오른쪽으로 한칸 이동
@@ -170,7 +170,7 @@ func 사다리풀이그리기() -> void:
 				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.아래쪽, 세로화살표위치(현재줄번호,oldy), 세로화살표위치(현재줄번호,y)])
 				# 오른쪽 화살표
 				현재줄번호 = (현재줄번호+1+사다리수.세로줄수)%사다리수.세로줄수
-				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.오른쪽, 가로화살표위치(현재줄번호-1,y)+사다리수.가로화살표위치보정, 가로화살표위치(현재줄번호,y)+사다리수.가로화살표위치보정])
+				사다리자료.풀이이동좌표[참가자번호].append([화살표방향.오른쪽, 가로화살표위치(현재줄번호-1,y), 가로화살표위치(현재줄번호,y)])
 				oldy = y
 				continue
 		# 나머지 끝까지 그린다.
@@ -185,18 +185,18 @@ func 사다리풀이그리기() -> void:
 			match 방향:
 				화살표방향.아래쪽:
 					a.rotate_z(PI)
+					a.position = (p1+p2)/2
 				화살표방향.왼쪽:
 					a.rotate_z(-PI/2)
+					a.position = (p1+p2)/2 -사다리수.가로화살표위치보정
 				화살표방향.오른쪽:
 					a.rotate_z(PI/2)
+					a.position = (p1+p2)/2 +사다리수.가로화살표위치보정
 			사다리풀이.add_child(a)
-			a.position = (p1+p2)/2
-
 
 	#사다리문제.visible = false
 	#사다리풀이.visible = true
 	#$"TopMenu/풀기단추".disabled = true
-
 
 func reset_camera_pos()->void:
 	var 사다리수 = 사다리용숫자들()
@@ -205,6 +205,7 @@ func reset_camera_pos()->void:
 	$Camera3D.look_at(Vector3.ZERO)
 	$DirectionalLight3D.position = Vector3(r,r,r)
 	$DirectionalLight3D.look_at(Vector3.ZERO)
+	#$OmniLight3D.position = Vector3(0,0,0)
 	$OmniLight3D.position = Vector3(r,-r,r)
 
 func _process(_delta: float) -> void:
