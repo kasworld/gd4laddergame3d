@@ -105,7 +105,7 @@ func 가로줄위치(x :int, y :int) -> Vector3:
 	var 사다리수 = 사다리용숫자들()
 	var 각도 = 사다리수.기둥간각도 * (x+0.5)
 	var 길이 = 사다리수.가로줄간거리 * y
-	var p = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리, 길이- 사다리수.기둥길이/2)
+	var p = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리 * cos(사다리수.기둥간각도/2), 길이- 사다리수.기둥길이/2)
 	return p
 
 func 사다리문제그리기() -> void:
