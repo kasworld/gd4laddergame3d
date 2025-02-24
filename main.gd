@@ -75,9 +75,9 @@ func 사다리용숫자들() -> Dictionary:
 	var rtn := {}
 	rtn.세로줄수 = 참가자들.get_child_count()
 	rtn.가로줄수 = rtn.세로줄수 *Settings.가로길칸배수
-	rtn.중심과의거리 = 30.0 * sqrt(rtn.세로줄수)
+	rtn.중심과의거리 = 50.0 * sqrt(rtn.세로줄수)
 	rtn.기둥간각도 = 2.0*PI/rtn.세로줄수
-	rtn.기둥길이 = rtn.세로줄수 * 30.0
+	rtn.기둥길이 = rtn.세로줄수 * 50.0
 	rtn.가로줄간거리 = rtn.기둥길이/rtn.가로줄수
 	rtn.세로줄간거리 = rtn.중심과의거리 * sin(rtn.기둥간각도/2) *2
 	rtn.가로화살표위치보정 = Vector3(0, 기둥반지름 *0.7, 0)
@@ -97,17 +97,19 @@ func 위치3D정리하기() -> void:
 # 중점을 돌려준다.
 func 세로줄위치(x :int, y :int) -> Vector3:
 	var 사다리수 = 사다리용숫자들()
-	var 각도 = 사다리수.기둥간각도*x
-	var 길이 = 사다리수.기둥길이 / 사다리수.가로줄수 * (y +0.5)
-	var p = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리, 길이)
+	var p = GlobalLib.make_pos_by_rad_r_3d(
+		사다리수.기둥간각도*x,
+		사다리수.중심과의거리,
+		사다리수.기둥길이 / 사다리수.가로줄수 * (y +0.5) )
 	return p
 
 # 중점을 돌려준다.
 func 가로줄위치(x :int, y :int) -> Vector3:
 	var 사다리수 = 사다리용숫자들()
-	var 각도 = 사다리수.기둥간각도 * (x+0.5)
-	var 길이 = 사다리수.가로줄간거리 * y
-	var p = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리 * cos(사다리수.기둥간각도/2), 길이- 사다리수.기둥길이/2)
+	var p = GlobalLib.make_pos_by_rad_r_3d(
+		사다리수.기둥간각도 * (x+0.5),
+		사다리수.중심과의거리 * cos(사다리수.기둥간각도/2),
+		사다리수.가로줄간거리 * (y +0.5) - 사다리수.기둥길이/2 )
 	return p
 
 func 사다리문제그리기() -> void:
@@ -122,7 +124,7 @@ func 사다리문제그리기() -> void:
 		사다리문제.remove_child(n)
 
 	for y in 사다리수.가로줄수:
-		for x in 사다리수.세로줄수+1:
+		for x in 사다리수.세로줄수:
 			if 사다리자료.자료[x%사다리수.세로줄수][y].왼쪽연결길:
 				var 가로줄 = GlobalLib.기둥만들기(사다리수.세로줄간거리, 기둥반지름, Color.WHITE)
 				가로줄.rotate_z(PI/2)
