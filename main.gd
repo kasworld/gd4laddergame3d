@@ -83,6 +83,9 @@ func 사다리용숫자들() -> Dictionary:
 
 func 위치3D정리하기() -> void:
 	var 사다리수 = 사다리용숫자들()
+	for i in min(이름들백업.size(),사다리수.세로줄수) :
+		$"왼쪽패널/Scroll출발/출발목록".get_child(i).text = 이름들백업[i][0]
+		$"오른쪽패널/Scroll도착/도착목록".get_child(i).text = 이름들백업[i][1]
 	for i in 사다리수.세로줄수:
 		var 각도 = 사다리수.기둥간각도*i
 		var o = $"사다리/세로기둥".get_child(i)
@@ -137,13 +140,16 @@ func 사다리문제그리기() -> void:
 	$"오른쪽패널/만들기".disabled = true
 	$"오른쪽패널/풀기".disabled = false
 
+var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
 func 사다리풀이그리기() -> void:
 	var 사다리수 = 사다리용숫자들()
-
+	이름들백업 = []
 	for i in 사다리수.세로줄수:
-		var s = 도착지점들.get_child(사다리자료.참가자위치[i]).text
-		도착지점들.get_child(사다리자료.참가자위치[i]).text += "<-" + 참가자들.get_child(i).text
-		참가자들.get_child(i).text += "->" + s
+		var s1 = 참가자들.get_child(i).text
+		var s2 = 도착지점들.get_child(사다리자료.참가자위치[i]).text
+		이름들백업.append([s1,s2])
+		참가자들.get_child(i).text = "%s->%s" %[s1,s2]
+		도착지점들.get_child(사다리자료.참가자위치[i]).text = "%s<-%s" %[s2,s1]
 		도착지점들.get_child(사다리자료.참가자위치[i]).add_theme_color_override("font_uneditable_color",참가자색[i])
 
 	for n in 사다리풀이.get_children():
