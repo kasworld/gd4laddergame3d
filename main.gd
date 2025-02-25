@@ -182,37 +182,44 @@ func 사다리풀이그리기() -> void:
 			var a :Arrow3D
 			match 방향:
 				화살표방향.아래쪽:
-					var x = poss[1]
-					var y1 = poss[2]
-					var y2 = poss[3]
-					p1 = 세로화살표위치(x,y1)
-					p2 = 세로화살표위치(x,y2)
-					a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
-					a.rotate_z(PI)
-					a.position = (p1+p2)/2
+					화살표추가_아래쪽(참가자번호,poss[1],poss[2],poss[3])
 				화살표방향.왼쪽:
-					var x1 = poss[1]
-					var x2 = poss[2]
-					var y = poss[3]
-					p1 = 가로화살표위치(x1,y)
-					p2 = 가로화살표위치(x2,y)
-					a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
-					a.rotate_z(-PI/2)
-					a.position = (p1+p2)/2 -사다리수.가로화살표위치보정
+					화살표추가_왼쪽(참가자번호,poss[1],poss[2],poss[3])
 				화살표방향.오른쪽:
-					var x1 = poss[1]
-					var x2 = poss[2]
-					var y = poss[3]
-					p1 = 가로화살표위치(x1,y)
-					p2 = 가로화살표위치(x2,y)
-					a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
-					a.rotate_z(PI/2)
-					a.position = (p1+p2)/2 +사다리수.가로화살표위치보정
-			사다리풀이.add_child(a)
+					화살표추가_오른쪽(참가자번호,poss[1],poss[2],poss[3])
 
 	#사다리문제.visible = false
 	#사다리풀이.visible = true
 	#$"TopMenu/풀기단추".disabled = true
+
+func 화살표추가_아래쪽(참가자번호 :int, x :int, y1 :int , y2 :int) -> Arrow3D:
+	var p1 = 세로화살표위치(x,y1)
+	var p2 = 세로화살표위치(x,y2)
+	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
+	a.rotate_z(PI)
+	a.position = (p1+p2)/2
+	사다리풀이.add_child(a)
+	return a
+
+func 화살표추가_왼쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> Arrow3D:
+	var p1 = 세로화살표위치(x1,y)
+	var p2 = 세로화살표위치(x2,y)
+	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
+	a.rotate_z(-PI/2)
+	a.position = (p1+p2)/2
+	a.position = (p1+p2)/2 -사다리용숫자들().가로화살표위치보정
+	사다리풀이.add_child(a)
+	return a
+
+func 화살표추가_오른쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> Arrow3D:
+	var p1 = 세로화살표위치(x1,y)
+	var p2 = 세로화살표위치(x2,y)
+	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
+	a.rotate_z(PI/2)
+	a.position = (p1+p2)/2
+	사다리풀이.add_child(a)
+	a.position = (p1+p2)/2 +사다리용숫자들().가로화살표위치보정
+	return a
 
 func reset_camera_pos()->void:
 	var 사다리수 = 사다리용숫자들()
