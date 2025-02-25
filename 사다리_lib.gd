@@ -16,7 +16,6 @@ class 구성자료:
 # Array[참가자수][참가자수*4]사다리구성자료
 var 자료 :Array
 var 참가자위치 :Array # [참가자] = 도착지
-var 풀이이동좌표 :Array  # [참가자][ [vector3,vector3] ]
 var 칸수 :Vector2i
 
 func 보기():
@@ -31,12 +30,10 @@ func 보기():
 func 만들기(a칸수 :Vector2i) -> 사다리Lib:
 	칸수 = a칸수
 	# 초기화
-	풀이이동좌표 = []
 	참가자위치 = []
 	자료 = []
 	for i in 칸수.x:
 		참가자위치.append(i)
-		풀이이동좌표.append([])
 		자료.append([])
 		for j in 칸수.y:
 			자료[i].append(구성자료.new())
