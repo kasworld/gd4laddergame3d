@@ -191,8 +191,8 @@ func 화살표추가_왼쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> 
 	var p2 = 세로화살표위치(x2,y)
 	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
 	a.rotate_z(-PI/2)
-	a.position = (p1+p2)/2
 	a.position = (p1+p2)/2 -사다리용숫자들().가로화살표위치보정
+	a.rotate_y(사다리용숫자들().기둥간각도 * (x1+x2)/2)
 	사다리풀이.add_child(a)
 	return a
 
@@ -201,9 +201,9 @@ func 화살표추가_오른쪽(참가자번호 :int, x1 :int, x2 :int , y :int) 
 	var p2 = 세로화살표위치(x2,y)
 	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
 	a.rotate_z(PI/2)
-	a.position = (p1+p2)/2
-	사다리풀이.add_child(a)
 	a.position = (p1+p2)/2 +사다리용숫자들().가로화살표위치보정
+	a.rotate_y(사다리용숫자들().기둥간각도 * (x1+x2)/2)
+	사다리풀이.add_child(a)
 	return a
 
 func reset_camera_pos()->void:
