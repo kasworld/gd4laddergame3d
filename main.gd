@@ -90,6 +90,11 @@ func 위치3D정리하기() -> void:
 		o.mesh.height = 사다리수.기둥길이
 		$"사다리/출발목록".get_child(i).position = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리, 사다리수.기둥길이/2 + 10)
 		$"사다리/도착목록".get_child(i).position = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리, -사다리수.기둥길이/2 - 10)
+	$"사다리/문제길".visible = false
+	$"사다리/풀이길".visible = false
+	$"오른쪽패널/만들기".disabled = false
+	$"오른쪽패널/풀기".disabled = true
+	$"오른쪽패널/깜빡이기".disabled = true
 
 # 중점을 돌려준다.
 func 세로화살표위치(x :int, y :int) -> Vector3:
@@ -116,7 +121,6 @@ func 사다리문제그리기() -> void:
 		참가자들.get_child(i).add_theme_color_override("font_uneditable_color", 참가자색[i])
 		참가자들.get_child(i).editable = false
 		도착지점들.get_child(i).editable = false
-
 	for n in 사다리문제.get_children():
 		사다리문제.remove_child(n)
 
@@ -128,11 +132,10 @@ func 사다리문제그리기() -> void:
 				가로줄.rotate_y(사다리수.기둥간각도 * (x+0.5))
 				가로줄.position = 가로화살표위치(x,y)
 				사다리문제.add_child(가로줄)
-
-	#사다리문제.visible = true
-	#사다리풀이.visible = false
-	#$"TopMenu/풀기단추".disabled = false
-	#$"TopMenu/만들기단추".disabled = true
+	$"사다리/문제길".visible = true
+	$"사다리/풀이길".visible = false
+	$"오른쪽패널/만들기".disabled = true
+	$"오른쪽패널/풀기".disabled = false
 
 func 사다리풀이그리기() -> void:
 	var 사다리수 = 사다리용숫자들()
@@ -173,9 +176,11 @@ func 사다리풀이그리기() -> void:
 		# 나머지 끝까지 그린다.
 		화살표추가_아래쪽(참가자번호,현재줄번호,oldy,사다리수.가로줄수)
 
-	#사다리문제.visible = false
-	#사다리풀이.visible = true
-	#$"TopMenu/풀기단추".disabled = true
+	$"사다리/문제길".visible = false
+	$"사다리/풀이길".visible = true
+	#$"오른쪽패널/만들기".disabled = true
+	$"오른쪽패널/풀기".disabled = true
+	$"오른쪽패널/깜빡이기".disabled = false
 
 func 화살표추가_아래쪽(참가자번호 :int, x :int, y1 :int , y2 :int) -> Arrow3D:
 	var p1 = 세로화살표위치(x,y1)
@@ -264,4 +269,3 @@ func _on_만들기_pressed() -> void:
 
 func _on_풀기_pressed() -> void:
 	사다리풀이그리기()
-	#$"TopMenu/깜빡이기".disabled = false
