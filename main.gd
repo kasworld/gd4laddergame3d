@@ -98,6 +98,7 @@ func 위치3D정리하기() -> void:
 	$"오른쪽패널/만들기".disabled = false
 	$"오른쪽패널/풀기".disabled = true
 	$"오른쪽패널/깜빡이기".disabled = true
+	reset_camera_pos()
 
 # 중점을 돌려준다.
 func 세로화살표위치(x :int, y :int) -> Vector3:
