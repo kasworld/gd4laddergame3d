@@ -67,7 +67,6 @@ func 마지막참가자제거하기() -> void:
 	$"사다리/도착목록".remove_child($"사다리/도착목록".get_child(마지막수))
 	위치3D정리하기()
 
-enum 화살표방향 {왼쪽,아래쪽,오른쪽}
 const 기둥반지름 = 3
 func 사다리용숫자들() -> Dictionary:
 	var rtn := {}
