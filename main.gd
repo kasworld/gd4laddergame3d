@@ -42,7 +42,7 @@ func 참가자추가하기() -> void:
 			참가자.release_focus()
 	)
 	참가자들.add_child(참가자)
-	var 도착점 = GlobalLib.LineEdit만들기("도착%d" % [i+1], Color.WHITE)
+	var 도착점 = GlobalLib.LineEdit만들기("도착%d" % [i+1], 참가자색[i])
 	도착점.text_changed.connect(
 		func(t :String):
 			$"사다리/도착목록".get_child(i).text = t
@@ -52,9 +52,9 @@ func 참가자추가하기() -> void:
 			도착점.release_focus()
 	)
 	도착지점들.add_child(도착점)
-	$"사다리/세로기둥".add_child(GlobalLib.기둥만들기(30, 기둥반지름, Color.WHITE))
+	$"사다리/세로기둥".add_child(GlobalLib.기둥만들기(30, 기둥반지름, 참가자색[i]))
 	$"사다리/출발목록".add_child(GlobalLib.Label3D만들기("출발%d" % [i+1], 참가자색[i]))
-	$"사다리/도착목록".add_child(GlobalLib.Label3D만들기("도착%d" % [i+1], Color.WHITE))
+	$"사다리/도착목록".add_child(GlobalLib.Label3D만들기("도착%d" % [i+1], 참가자색[i]))
 	위치3D정리하기()
 
 func 마지막참가자제거하기() -> void:
@@ -92,7 +92,7 @@ func 위치3D정리하기() -> void:
 	for i in 사다리수.세로줄수:
 		var 각도 = 사다리수.기둥간각도*i
 		var o = $"사다리/세로기둥".get_child(i)
-		o.position = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리)
+		o.position = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리,0)
 		o.mesh.height = 사다리수.기둥길이
 		$"사다리/출발목록".get_child(i).position = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리, 사다리수.기둥길이/2 + 10)
 		$"사다리/도착목록".get_child(i).position = GlobalLib.make_pos_by_rad_r_3d(각도, 사다리수.중심과의거리, -사다리수.기둥길이/2 - 10)
@@ -104,16 +104,7 @@ func 위치3D정리하기() -> void:
 	reset_camera_pos()
 
 # 중점을 돌려준다.
-func 세로화살표위치(x :int, y :int) -> Vector3:
-	var 사다리수 = 사다리용숫자들()
-	var p = GlobalLib.make_pos_by_rad_r_3d(
-		사다리수.기둥간각도*x,
-		사다리수.중심과의거리,
-		사다리수.기둥길이 / 사다리수.가로줄수 * (y ) -사다리수.기둥길이/2)
-	return p
-
-# 중점을 돌려준다.
-func 가로화살표위치(x :int, y :int) -> Vector3:
+func 가로기둥위치(x :int, y :int) -> Vector3:
 	var 사다리수 = 사다리용숫자들()
 	var p = GlobalLib.make_pos_by_rad_r_3d(
 		사다리수.기둥간각도 * (x+0.5),
@@ -137,7 +128,7 @@ func 사다리문제그리기() -> void:
 				var 가로줄 = GlobalLib.기둥만들기(사다리수.세로줄간거리, 기둥반지름, Color.WHITE)
 				가로줄.rotate_z(PI/2)
 				가로줄.rotate_y(사다리수.기둥간각도 * (x+0.5))
-				가로줄.position = 가로화살표위치(x,y)
+				가로줄.position = 가로기둥위치(x,y)
 				사다리문제.add_child(가로줄)
 	$"사다리/문제길".visible = true
 	$"사다리/풀이길".visible = false
@@ -185,11 +176,19 @@ func 사다리풀이그리기() -> void:
 		# 나머지 끝까지 그린다.
 		화살표추가_아래쪽(참가자번호,현재줄번호,oldy,사다리수.가로줄수)
 
-	$"사다리/문제길".visible = false
+	#$"사다리/문제길".visible = false
 	$"사다리/풀이길".visible = true
-	#$"오른쪽패널/만들기".disabled = true
 	$"오른쪽패널/풀기".disabled = true
 	$"오른쪽패널/깜빡이기".disabled = false
+
+# 중점을 돌려준다.
+func 세로화살표위치(x :int, y :int) -> Vector3:
+	var 사다리수 = 사다리용숫자들()
+	var p = GlobalLib.make_pos_by_rad_r_3d(
+		사다리수.기둥간각도*x,
+		사다리수.중심과의거리,
+		사다리수.가로줄간거리 * (y) -사다리수.기둥길이/2)
+	return p
 
 func 화살표추가_아래쪽(참가자번호 :int, x :int, y1 :int , y2 :int) -> Arrow3D:
 	var p1 = 세로화살표위치(x,y1)
@@ -270,6 +269,23 @@ func _unhandled_input(event: InputEvent) -> void:
 			참가자추가하기()
 		elif event.keycode == KEY_DELETE:
 			마지막참가자제거하기()
+
+var dragging = false
+func _input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+		if not dragging and event.pressed:
+			dragging = true
+		# Stop dragging if the button is released.
+		if dragging and not event.pressed:
+			dragging = false
+
+	if event is InputEventMouseMotion and dragging:
+		# While dragging, move the sprite with the mouse.
+		var x = event.relative.x /100
+		var y = event.relative.y /100
+		$Camera3D.position = $Camera3D.position.rotated( Vector3.UP, -x )
+		$Camera3D.position = $Camera3D.position.rotated( Vector3.RIGHT, -y )
+		$Camera3D.look_at(Vector3.ZERO)
 
 func _on_시야바꾸기_pressed() -> void:
 	camera_move = !camera_move
