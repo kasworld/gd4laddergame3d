@@ -10,6 +10,9 @@ var 화살표 = preload("res://arrow3d/arrow3d.tscn")
 var 참가자색 :Array[Color]
 var camera_move = false
 var 사다리자료 :사다리Lib
+var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
+var 깜빡이는중 :bool
+var 현재깜빡이는그룹번호 :int # group_name =  "%d" % 참가자번호
 
 func _ready() -> void:
 	var vp_size = get_viewport().get_visible_rect().size
@@ -39,7 +42,7 @@ func 참가자추가하기() -> void:
 			참가자.release_focus()
 	)
 	참가자들.add_child(참가자)
-	var 도착점 = GlobalLib.LineEdit만들기("도착%d" % [i+1], 참가자색[i])
+	var 도착점 = GlobalLib.LineEdit만들기("도착%d" % [i+1], Color.WHITE)
 	도착점.text_changed.connect(
 		func(t :String):
 			$"사다리/도착목록".get_child(i).text = t
@@ -49,9 +52,9 @@ func 참가자추가하기() -> void:
 			도착점.release_focus()
 	)
 	도착지점들.add_child(도착점)
-	$"사다리/세로기둥".add_child(GlobalLib.기둥만들기(30, 기둥반지름, 참가자색[i]))
+	$"사다리/세로기둥".add_child(GlobalLib.기둥만들기(30, 기둥반지름, Color.WHITE))
 	$"사다리/출발목록".add_child(GlobalLib.Label3D만들기("출발%d" % [i+1], 참가자색[i]))
-	$"사다리/도착목록".add_child(GlobalLib.Label3D만들기("도착%d" % [i+1], 참가자색[i]))
+	$"사다리/도착목록".add_child(GlobalLib.Label3D만들기("도착%d" % [i+1], Color.WHITE))
 	위치3D정리하기()
 
 func 마지막참가자제거하기() -> void:
@@ -141,7 +144,6 @@ func 사다리문제그리기() -> void:
 	$"오른쪽패널/만들기".disabled = true
 	$"오른쪽패널/풀기".disabled = false
 
-var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
 func 사다리풀이그리기() -> void:
 	var 사다리수 = 사다리용숫자들()
 	이름들백업 = []
@@ -152,7 +154,7 @@ func 사다리풀이그리기() -> void:
 		참가자들.get_child(i).text = "%s->%s" %[s1,s2]
 		도착지점들.get_child(사다리자료.참가자위치[i]).text = "%s<-%s" %[s2,s1]
 		도착지점들.get_child(사다리자료.참가자위치[i]).add_theme_color_override("font_uneditable_color",참가자색[i])
-
+		$"사다리/도착목록".get_child(사다리자료.참가자위치[i]).modulate = 참가자색[i]
 	for n in 사다리풀이.get_children():
 		사다리풀이.remove_child(n)
 
@@ -196,6 +198,7 @@ func 화살표추가_아래쪽(참가자번호 :int, x :int, y1 :int , y2 :int) 
 	a.rotate_z(PI)
 	a.position = (p1+p2)/2
 	사다리풀이.add_child(a)
+	a.add_to_group("%d" % 참가자번호)
 	return a
 
 func 화살표추가_왼쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> Arrow3D:
@@ -206,6 +209,7 @@ func 화살표추가_왼쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> 
 	a.position = (p1+p2)/2 -사다리용숫자들().가로화살표위치보정
 	a.rotate_y(사다리용숫자들().기둥간각도 * (x1+x2)/2)
 	사다리풀이.add_child(a)
+	a.add_to_group("%d" % 참가자번호)
 	return a
 
 func 화살표추가_오른쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> Arrow3D:
@@ -216,6 +220,7 @@ func 화살표추가_오른쪽(참가자번호 :int, x1 :int, x2 :int , y :int) 
 	a.position = (p1+p2)/2 +사다리용숫자들().가로화살표위치보정
 	a.rotate_y(사다리용숫자들().기둥간각도 * (x1+x2)/2)
 	사다리풀이.add_child(a)
+	a.add_to_group("%d" % 참가자번호)
 	return a
 
 func reset_camera_pos()->void:
@@ -227,6 +232,15 @@ func reset_camera_pos()->void:
 	$DirectionalLight3D.look_at(Vector3.ZERO)
 	#$OmniLight3D.position = Vector3(0,0,0)
 	$OmniLight3D.position = Vector3(r,-r,r)
+
+func 깜빡이기() -> void:
+	for i in 사다리용숫자들().세로줄수:
+		var group_name = "%d" % i
+		if i == 현재깜빡이는그룹번호:
+			get_tree().call_group(group_name, "show")
+		else:
+			get_tree().call_group(group_name, "hide")
+	현재깜빡이는그룹번호 = (현재깜빡이는그룹번호+1) % 사다리용숫자들().세로줄수
 
 func _process(_delta: float) -> void:
 	var t = Time.get_unix_time_from_system() /-3.0
@@ -276,3 +290,12 @@ func _on_만들기_pressed() -> void:
 
 func _on_풀기_pressed() -> void:
 	사다리풀이그리기()
+
+func _on_깜빡이기_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		$"Timer깜빡이".start(0.5)
+	else:
+		$"Timer깜빡이".stop()
+
+func _on_timer깜빡이_timeout() -> void:
+	깜빡이기()

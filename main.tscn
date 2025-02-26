@@ -82,7 +82,11 @@ size_flags_horizontal = 3
 
 [node name="풀이길" type="Node3D" parent="사다리"]
 
+[node name="Timer깜빡이" type="Timer" parent="."]
+
 [connection signal="pressed" from="왼쪽패널/참가자추가" to="." method="_on_참가자추가_pressed"]
 [connection signal="pressed" from="왼쪽패널/참가자제거" to="." method="_on_참가자제거_pressed"]
 [connection signal="pressed" from="오른쪽패널/만들기" to="." method="_on_만들기_pressed"]
 [connection signal="pressed" from="오른쪽패널/풀기" to="." method="_on_풀기_pressed"]
+[connection signal="toggled" from="오른쪽패널/깜빡이기" to="." method="_on_깜빡이기_toggled"]
+[connection signal="timeout" from="Timer깜빡이" to="." method="_on_timer깜빡이_timeout"]
