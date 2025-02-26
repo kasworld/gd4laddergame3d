@@ -242,6 +242,12 @@ func 깜빡이기() -> void:
 			get_tree().call_group(group_name, "hide")
 	현재깜빡이는그룹번호 = (현재깜빡이는그룹번호+1) % 사다리용숫자들().세로줄수
 
+func 깜빡이기_종료() -> void:
+	for i in 사다리용숫자들().세로줄수:
+		var group_name = "%d" % i
+		get_tree().call_group(group_name, "show")
+	현재깜빡이는그룹번호 = 0
+
 func _process(_delta: float) -> void:
 	var t = Time.get_unix_time_from_system() /-3.0
 	if camera_move:
@@ -293,9 +299,10 @@ func _on_풀기_pressed() -> void:
 
 func _on_깜빡이기_toggled(toggled_on: bool) -> void:
 	if toggled_on:
-		$"Timer깜빡이".start(0.5)
+		$"Timer깜빡이".start(1.5)
 	else:
 		$"Timer깜빡이".stop()
+		깜빡이기_종료()
 
 func _on_timer깜빡이_timeout() -> void:
 	깜빡이기()
