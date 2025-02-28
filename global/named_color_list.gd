@@ -14,6 +14,20 @@ func get_colorname_by_color(c :Color)->String:
 			return v[1]
 	return c.to_html()
 
+func make_light_color_list(l :float= 0.5) -> Array:
+	var rtn := []
+	for i in color_list:
+		if i[0].get_luminance() > l:
+			rtn.append(i)
+	return rtn
+
+func make_dark_color_list(l :float= 0.5) -> Array:
+	var rtn := []
+	for i in color_list:
+		if i[0].get_luminance() < l:
+			rtn.append(i)
+	return rtn
+
 const color_list = [
 [Color.ALICE_BLUE, "ALICE_BLUE"],
 [Color.ANTIQUE_WHITE, "ANTIQUE_WHITE"],

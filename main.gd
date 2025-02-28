@@ -7,6 +7,7 @@ extends Node3D
 
 var 화살표 = preload("res://arrow3d/arrow3d.tscn")
 
+var 밝은색목록 :Array # [color, name]
 var 참가자색 :Array[Color]
 var 기본색 : Color = Color.DIM_GRAY
 var camera_move = false
@@ -16,6 +17,7 @@ var 깜빡이는중 :bool
 var 현재깜빡이는그룹번호 :int # group_name =  "%d" % 참가자번호
 
 func _ready() -> void:
+	밝은색목록 = NamedColorList.make_light_color_list()
 	var vp_size = get_viewport().get_visible_rect().size
 	var r = min(vp_size.x,vp_size.y)/2
 	RenderingServer.set_default_clear_color( GlobalLib.colors.default_clear)
@@ -32,7 +34,7 @@ func 참가자추가하기() -> void:
 	var i = 사다리용숫자들().세로줄수
 	if i >= Settings.최대칸수:
 		return
-	참가자색.append(NamedColorList.color_list.pick_random()[0])
+	참가자색.append(밝은색목록.pick_random()[0])
 
 	var 참가자 = GlobalLib.LineEdit만들기("출발%d" % [i+1], 참가자색[i])
 	참가자.text_changed.connect(
