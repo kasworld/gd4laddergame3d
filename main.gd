@@ -5,7 +5,7 @@ extends Node3D
 @onready var 사다리문제 = $"사다리/문제길"
 @onready var 사다리풀이 = $"사다리/풀이길"
 
-var 화살표 = preload("res://arrow3d/arrow3d.tscn")
+var 화살표 = preload("res://arrow3d/arrow_3d.tscn")
 
 var 밝은색목록 :Array # [color, name]
 var 참가자색 :Array[Color]
