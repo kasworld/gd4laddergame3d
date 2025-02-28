@@ -107,7 +107,7 @@ func 위치3D정리하기() -> void:
 func 가로기둥위치(x :int, y :int) -> Vector3:
 	var 사다리수 = 사다리용숫자들()
 	var p = GlobalLib.make_pos_by_rad_r_3d(
-		사다리수.기둥간각도 * (x+0.5),
+		사다리수.기둥간각도 * (x-0.5),
 		사다리수.중심과의거리 * cos(사다리수.기둥간각도/2),
 		사다리수.기둥길이/2 - 사다리수.가로줄간거리 * (y +0.5)   )
 	return p
@@ -127,7 +127,7 @@ func 사다리문제그리기() -> void:
 			if 사다리자료.자료[x%사다리수.세로줄수][y].왼쪽연결길:
 				var 가로줄 = GlobalLib.기둥만들기(사다리수.세로줄간거리, 기둥반지름, Color.WHITE)
 				가로줄.rotate_z(PI/2)
-				가로줄.rotate_y(사다리수.기둥간각도 * (x+0.5))
+				가로줄.rotate_y(사다리수.기둥간각도 * (x-0.5))
 				가로줄.position = 가로기둥위치(x,y)
 				사다리문제.add_child(가로줄)
 	$"사다리/문제길".visible = true
