@@ -24,10 +24,9 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("2_l2p67")
 
-[node name="제목" type="Label" parent="왼쪽패널"]
+[node name="시야변경" type="Button" parent="왼쪽패널"]
 layout_mode = 2
-text = "사다리타기3D"
-horizontal_alignment = 1
+text = "시야변경"
 
 [node name="참가자추가" type="Button" parent="왼쪽패널"]
 layout_mode = 2
@@ -84,6 +83,7 @@ size_flags_horizontal = 3
 
 [node name="Timer깜빡이" type="Timer" parent="."]
 
+[connection signal="pressed" from="왼쪽패널/시야변경" to="." method="_on_시야변경_pressed"]
 [connection signal="pressed" from="왼쪽패널/참가자추가" to="." method="_on_참가자추가_pressed"]
 [connection signal="pressed" from="왼쪽패널/참가자제거" to="." method="_on_참가자제거_pressed"]
 [connection signal="pressed" from="오른쪽패널/만들기" to="." method="_on_만들기_pressed"]

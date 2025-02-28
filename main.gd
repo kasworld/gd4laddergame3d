@@ -265,7 +265,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.keycode == KEY_ESCAPE:
 			_on_끝내기_pressed()
 		elif event.keycode == KEY_ENTER:
-			_on_시야바꾸기_pressed()
+			_on_시야변경_pressed()
 		elif event.keycode == KEY_INSERT:
 			참가자추가하기()
 		elif event.keycode == KEY_DELETE:
@@ -288,7 +288,7 @@ func _input(event):
 		$Camera3D.position = $Camera3D.position.rotated( Vector3.RIGHT, -y )
 		$Camera3D.look_at(Vector3.ZERO)
 
-func _on_시야바꾸기_pressed() -> void:
+func _on_시야변경_pressed() -> void:
 	camera_move = !camera_move
 	if camera_move == false:
 		reset_camera_pos()
@@ -316,7 +316,7 @@ func _on_풀기_pressed() -> void:
 
 func _on_깜빡이기_toggled(toggled_on: bool) -> void:
 	if toggled_on:
-		$"Timer깜빡이".start(1.5)
+		$"Timer깜빡이".start(1.0)
 	else:
 		$"Timer깜빡이".stop()
 		깜빡이기_종료()
