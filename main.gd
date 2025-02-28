@@ -70,7 +70,8 @@ func 마지막참가자제거하기() -> void:
 	$"사다리/도착목록".remove_child($"사다리/도착목록".get_child(마지막수))
 	위치3D정리하기()
 
-const 기둥반지름 = 3
+const 기둥반지름 = 2.5
+const 화살표반지름 = 3
 func 사다리용숫자들() -> Dictionary:
 	var rtn := {}
 	rtn.세로줄수 = 참가자들.get_child_count()
@@ -80,8 +81,8 @@ func 사다리용숫자들() -> Dictionary:
 	rtn.기둥길이 = rtn.세로줄수 * 50.0
 	rtn.가로줄간거리 = rtn.기둥길이/rtn.가로줄수
 	rtn.세로줄간거리 = rtn.중심과의거리 * sin(rtn.기둥간각도/2) *2
-	rtn.가로화살표위치보정 = Vector3(0, 기둥반지름 *0.7, 0)
-	rtn.세로화살표위치보정 = Vector3(0, 기둥반지름, 0)
+	rtn.가로화살표위치보정 = Vector3(0, 화살표반지름 *1.0, 0)
+	rtn.세로화살표위치보정 = Vector3(0, 화살표반지름, 0)
 	return rtn
 
 func 위치3D정리하기() -> void:
@@ -176,7 +177,7 @@ func 사다리풀이그리기() -> void:
 		# 나머지 끝까지 그린다.
 		화살표추가_아래쪽(참가자번호,현재줄번호,oldy,사다리수.가로줄수)
 
-	#$"사다리/문제길".visible = false
+	$"사다리/문제길".visible = false
 	$"사다리/풀이길".visible = true
 	$"오른쪽패널/풀기".disabled = true
 	$"오른쪽패널/깜빡이기".disabled = false
@@ -187,13 +188,13 @@ func 세로화살표위치(x :int, y :int) -> Vector3:
 	var p = GlobalLib.make_pos_by_rad_r_3d(
 		사다리수.기둥간각도*x,
 		사다리수.중심과의거리,
-		사다리수.기둥길이/2 - 사다리수.가로줄간거리 * (y) )
+		사다리수.기둥길이/2 - 사다리수.가로줄간거리 * (y+0.5)  )
 	return p
 
 func 화살표추가_아래쪽(참가자번호 :int, x :int, y1 :int , y2 :int) -> Arrow3D:
 	var p1 = 세로화살표위치(x,y1)
 	var p2 = 세로화살표위치(x,y2)
-	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
+	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 화살표반지름, 화살표반지름*2 )
 	a.rotate_z(PI)
 	a.position = (p1+p2)/2
 	사다리풀이.add_child(a)
@@ -203,7 +204,7 @@ func 화살표추가_아래쪽(참가자번호 :int, x :int, y1 :int , y2 :int) 
 func 화살표추가_왼쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> Arrow3D:
 	var p1 = 세로화살표위치(x1,y)
 	var p2 = 세로화살표위치(x2,y)
-	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
+	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 화살표반지름, 화살표반지름*2 )
 	a.rotate_z(PI/2)
 	a.position = (p1+p2)/2 -사다리용숫자들().가로화살표위치보정
 	a.rotate_y(사다리용숫자들().기둥간각도 * (x1+x2)/2)
@@ -214,7 +215,7 @@ func 화살표추가_왼쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> 
 func 화살표추가_오른쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> Arrow3D:
 	var p1 = 세로화살표위치(x1,y)
 	var p2 = 세로화살표위치(x2,y)
-	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 기둥반지름, 기둥반지름*2 )
+	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 화살표반지름, 화살표반지름*2 )
 	a.rotate_z(-PI/2)
 	a.position = (p1+p2)/2 +사다리용숫자들().가로화살표위치보정
 	a.rotate_y(사다리용숫자들().기둥간각도 * (x1+x2)/2)
