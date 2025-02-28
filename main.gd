@@ -8,7 +8,7 @@ extends Node3D
 var 화살표 = preload("res://arrow3d/arrow3d.tscn")
 
 var 참가자색 :Array[Color]
-var 기본색 : Color = Color.GRAY
+var 기본색 : Color = Color.DIM_GRAY
 var camera_move = false
 var 사다리자료 :사다리Lib
 var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
@@ -72,7 +72,7 @@ func 마지막참가자제거하기() -> void:
 	$"사다리/도착목록".remove_child($"사다리/도착목록".get_child(마지막수))
 	위치3D정리하기()
 
-const 기둥반지름 = 2.5
+const 기둥반지름 = 1.0
 const 화살표반지름 = 3
 func 사다리용숫자들() -> Dictionary:
 	var rtn := {}
@@ -179,7 +179,7 @@ func 사다리풀이그리기() -> void:
 		# 나머지 끝까지 그린다.
 		화살표추가_아래쪽(참가자번호,현재줄번호,oldy,사다리수.가로줄수)
 
-	$"사다리/문제길".visible = false
+	#$"사다리/문제길".visible = false
 	$"사다리/풀이길".visible = true
 	$"오른쪽패널/풀기".disabled = true
 	$"오른쪽패널/깜빡이기".disabled = false
