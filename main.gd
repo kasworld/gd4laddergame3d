@@ -8,6 +8,7 @@ extends Node3D
 var 화살표 = preload("res://arrow3d/arrow3d.tscn")
 
 var 참가자색 :Array[Color]
+var 기본색 : Color = Color.GRAY
 var camera_move = false
 var 사다리자료 :사다리Lib
 var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
@@ -32,6 +33,7 @@ func 참가자추가하기() -> void:
 	if i >= Settings.최대칸수:
 		return
 	참가자색.append(NamedColorList.color_list.pick_random()[0])
+
 	var 참가자 = GlobalLib.LineEdit만들기("출발%d" % [i+1], 참가자색[i])
 	참가자.text_changed.connect(
 		func(t :String):
@@ -42,7 +44,7 @@ func 참가자추가하기() -> void:
 			참가자.release_focus()
 	)
 	참가자들.add_child(참가자)
-	var 도착점 = GlobalLib.LineEdit만들기("도착%d" % [i+1], 참가자색[i])
+	var 도착점 = GlobalLib.LineEdit만들기("도착%d" % [i+1], 기본색)
 	도착점.text_changed.connect(
 		func(t :String):
 			$"사다리/도착목록".get_child(i).text = t
@@ -52,9 +54,9 @@ func 참가자추가하기() -> void:
 			도착점.release_focus()
 	)
 	도착지점들.add_child(도착점)
-	$"사다리/세로기둥".add_child(GlobalLib.기둥만들기(30, 기둥반지름, 참가자색[i]))
+	$"사다리/세로기둥".add_child(GlobalLib.기둥만들기(30, 기둥반지름, 기본색))
 	$"사다리/출발목록".add_child(GlobalLib.Label3D만들기("출발%d" % [i+1], 참가자색[i]))
-	$"사다리/도착목록".add_child(GlobalLib.Label3D만들기("도착%d" % [i+1], 참가자색[i]))
+	$"사다리/도착목록".add_child(GlobalLib.Label3D만들기("도착%d" % [i+1], 기본색))
 	위치3D정리하기()
 
 func 마지막참가자제거하기() -> void:

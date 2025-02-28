@@ -26,7 +26,7 @@ theme = ExtResource("2_l2p67")
 
 [node name="시야변경" type="Button" parent="왼쪽패널"]
 layout_mode = 2
-text = "시야변경"
+text = "Enter:시야변경"
 
 [node name="참가자추가" type="Button" parent="왼쪽패널"]
 layout_mode = 2
