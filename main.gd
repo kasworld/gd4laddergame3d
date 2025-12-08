@@ -10,7 +10,6 @@ var 화살표 = preload("res://arrow3d/arrow_3d.tscn")
 var 밝은색목록 :Array # [color, name]
 var 참가자색 :Array[Color]
 var 기본색 : Color = Color.DIM_GRAY
-var camera_move = false
 var 사다리자료 :사다리Lib
 var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
 var 깜빡이는중 :bool
@@ -21,6 +20,7 @@ func _ready() -> void:
 	var vp_size = get_viewport().get_visible_rect().size
 	var r = min(vp_size.x,vp_size.y)/2
 	RenderingServer.set_default_clear_color( GlobalLib.colors.default_clear)
+
 	$"왼쪽패널".size = Vector2(vp_size.x/2 -r, vp_size.y)
 	$오른쪽패널.size = Vector2(vp_size.x/2 -r, vp_size.y)
 	$오른쪽패널.position = Vector2(vp_size.x/2 + r, 0)
@@ -29,6 +29,17 @@ func _ready() -> void:
 	for i in Settings.시작칸수:
 		참가자추가하기()
 	reset_camera_pos()
+
+var WorldSize :Vector3
+func reset_camera_pos()->void:
+	var 사다리수 = 사다리용숫자들()
+	var r = 사다리수.중심과의거리 *3
+	WorldSize = Vector3(r,r,r)
+	$OmniLight3D.position = Vector3(0,0,WorldSize.length())
+	$OmniLight3D.omni_range = WorldSize.length()*2
+	$FixedCameraLight.set_center_pos_far(Vector3.ZERO, 	Vector3(0, 0, WorldSize.z*2), WorldSize.length()*2)
+	$MovingCameraLightHober.set_center_pos_far( Vector3.ZERO, Vector3(0, 0, WorldSize.z), WorldSize.length()*2)
+	$MovingCameraLightAround.set_center_pos_far( Vector3.ZERO, Vector3(0, 0, WorldSize.z), WorldSize.length()*2)
 
 func 참가자추가하기() -> void:
 	var i = 사다리용숫자들().세로줄수
@@ -198,7 +209,7 @@ func 세로화살표위치(x :int, y :int) -> Vector3:
 func 화살표추가_아래쪽(참가자번호 :int, x :int, y1 :int , y2 :int) -> Arrow3D:
 	var p1 = 세로화살표위치(x,y1)
 	var p2 = 세로화살표위치(x,y2)
-	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 화살표반지름, 화살표반지름*2 )
+	var a = 화살표.instantiate().set_size( (p1-p2).length() ,  화살표반지름, 화살표반지름*2 ).set_color(참가자색[참가자번호])
 	a.rotate_z(PI)
 	a.position = (p1+p2)/2
 	사다리풀이.add_child(a)
@@ -208,7 +219,7 @@ func 화살표추가_아래쪽(참가자번호 :int, x :int, y1 :int , y2 :int) 
 func 화살표추가_왼쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> Arrow3D:
 	var p1 = 세로화살표위치(x1,y)
 	var p2 = 세로화살표위치(x2,y)
-	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 화살표반지름, 화살표반지름*2 )
+	var a = 화살표.instantiate().set_size( (p1-p2).length() , 화살표반지름, 화살표반지름*2 ).set_color(참가자색[참가자번호])
 	a.rotate_z(PI/2)
 	a.position = (p1+p2)/2 -사다리용숫자들().가로화살표위치보정
 	a.rotate_y(사다리용숫자들().기둥간각도 * (x1+x2)/2)
@@ -219,23 +230,13 @@ func 화살표추가_왼쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> 
 func 화살표추가_오른쪽(참가자번호 :int, x1 :int, x2 :int , y :int) -> Arrow3D:
 	var p1 = 세로화살표위치(x1,y)
 	var p2 = 세로화살표위치(x2,y)
-	var a = 화살표.instantiate().init( (p1-p2).length() , 참가자색[참가자번호], 화살표반지름, 화살표반지름*2 )
+	var a = 화살표.instantiate().set_size( (p1-p2).length() , 화살표반지름, 화살표반지름*2 ).set_color(참가자색[참가자번호])
 	a.rotate_z(-PI/2)
 	a.position = (p1+p2)/2 +사다리용숫자들().가로화살표위치보정
 	a.rotate_y(사다리용숫자들().기둥간각도 * (x1+x2)/2)
 	사다리풀이.add_child(a)
 	a.add_to_group("%d" % 참가자번호)
 	return a
-
-func reset_camera_pos()->void:
-	var 사다리수 = 사다리용숫자들()
-	var r = 사다리수.중심과의거리 *3
-	$Camera3D.position = Vector3(1,1,r*1)
-	$Camera3D.look_at(Vector3.ZERO)
-	$DirectionalLight3D.position = Vector3(r,r,r)
-	$DirectionalLight3D.look_at(Vector3.ZERO)
-	#$OmniLight3D.position = Vector3(0,0,0)
-	$OmniLight3D.position = Vector3(r,-r,r)
 
 func 깜빡이기() -> void:
 	for i in 사다리용숫자들().세로줄수:
@@ -254,26 +255,31 @@ func 깜빡이기_종료() -> void:
 
 func _process(_delta: float) -> void:
 	var t = Time.get_unix_time_from_system() /-3.0
-	if camera_move:
-		var 사다리수 = 사다리용숫자들()
-		var r = 사다리수.중심과의거리 *3
-		var 길이 = 사다리수.기둥길이
-		$Camera3D.position = Vector3(sin(t)*r, sin(t)*길이 , cos(t)*r   )
-		$Camera3D.look_at(Vector3.ZERO)
-		$DirectionalLight3D.position = Vector3(sin(t)*r, cos(t)*길이 , cos(t)*r   )
-		$DirectionalLight3D.look_at(Vector3.ZERO)
+	if $MovingCameraLightHober.is_current_camera():
+		$MovingCameraLightHober.move_hober_around_z(t, Vector3.ZERO, (WorldSize.x+WorldSize.y)/2, WorldSize.length()*0.6 )
+	elif $MovingCameraLightAround.is_current_camera():
+		$MovingCameraLightAround.move_wave_around_y(t, Vector3.ZERO, (WorldSize.x+WorldSize.y)/2, WorldSize.length()*0.6 )
 
-# esc to exit
+var key2fn = {
+	KEY_ESCAPE:_on_button_esc_pressed,
+	KEY_ENTER:_on_카메라변경_pressed,
+	KEY_PAGEUP:_on_button_fov_up_pressed,
+	KEY_PAGEDOWN:_on_button_fov_down_pressed,
+	KEY_INSERT:참가자추가하기,
+	KEY_DELETE:마지막참가자제거하기,
+}
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_ESCAPE:
-			_on_끝내기_pressed()
-		elif event.keycode == KEY_ENTER:
-			_on_시야변경_pressed()
-		elif event.keycode == KEY_INSERT:
-			참가자추가하기()
-		elif event.keycode == KEY_DELETE:
-			마지막참가자제거하기()
+		var fn = key2fn.get(event.keycode)
+		if fn != null:
+			fn.call()
+		if $FixedCameraLight.is_current_camera():
+			var fi = FlyNode3D.Key2Info.get(event.keycode)
+			if fi != null:
+				FlyNode3D.fly_node3d($FixedCameraLight, fi)
+
+	elif event is InputEventMouseButton and event.is_pressed():
+		pass
 
 var dragging = false
 func _input(event):
@@ -292,12 +298,16 @@ func _input(event):
 		$Camera3D.position = $Camera3D.position.rotated( Vector3.RIGHT, -y )
 		$Camera3D.look_at(Vector3.ZERO)
 
-func _on_시야변경_pressed() -> void:
-	camera_move = !camera_move
-	if camera_move == false:
-		reset_camera_pos()
+func _on_카메라변경_pressed() -> void:
+	MovingCameraLight.NextCamera()
 
-func _on_끝내기_pressed() -> void:
+func _on_button_fov_up_pressed() -> void:
+	MovingCameraLight.GetCurrentCamera().fov_camera_inc()
+
+func _on_button_fov_down_pressed() -> void:
+	MovingCameraLight.GetCurrentCamera().fov_camera_dec()
+
+func _on_button_esc_pressed() -> void:
 	get_tree().quit()
 
 func _on_참가자추가_pressed() -> void:
