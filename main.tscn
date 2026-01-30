@@ -4,6 +4,7 @@
 [ext_resource type="Theme" uid="uid://dt7yd8h3u1hqh" path="res://사다리게임/사다리타기.tres" id="2_l2p67"]
 [ext_resource type="PackedScene" uid="uid://ces3a6yv0c5fi" path="res://moving_carmera_light/moving_camera_light.tscn" id="3_h2yge"]
 [ext_resource type="PackedScene" uid="uid://dl14flc0fkeyt" path="res://axis_arrow_3d/axis_arrow_3d.tscn" id="4_1bvp3"]
+[ext_resource type="PackedScene" uid="uid://dsyfp4odtfton" path="res://사다리게임/사다리게임.tscn" id="5_lquwl"]
 
 [node name="Main" type="Node3D" unique_id=1291196586]
 script = ExtResource("1_p4pjj")
@@ -89,18 +90,6 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="사다리" type="Node3D" parent="." unique_id=1860092501]
-
-[node name="세로기둥" type="Node3D" parent="사다리" unique_id=387465661]
-
-[node name="출발목록" type="Node3D" parent="사다리" unique_id=267558287]
-
-[node name="도착목록" type="Node3D" parent="사다리" unique_id=34359149]
-
-[node name="문제길" type="Node3D" parent="사다리" unique_id=1796078130]
-
-[node name="풀이길" type="Node3D" parent="사다리" unique_id=734294955]
-
 [node name="Timer깜빡이" type="Timer" parent="." unique_id=1957388829]
 
 [node name="FixedCameraLight" parent="." unique_id=383744815 instance=ExtResource("3_h2yge")]
@@ -110,6 +99,8 @@ size_flags_horizontal = 3
 [node name="MovingCameraLightHober" parent="." unique_id=909872986 instance=ExtResource("3_h2yge")]
 
 [node name="AxisArrow3D" parent="." unique_id=700798448 instance=ExtResource("4_1bvp3")]
+
+[node name="사다리게임" parent="." unique_id=746454374 instance=ExtResource("5_lquwl")]
 
 [connection signal="pressed" from="왼쪽패널/참가자추가" to="." method="_on_참가자추가_pressed"]
 [connection signal="pressed" from="왼쪽패널/참가자제거" to="." method="_on_참가자제거_pressed"]
