@@ -40,7 +40,7 @@ func _ready() -> void:
 
 	$"왼쪽패널/Scroll출발".get_v_scroll_bar().scrolling.connect(_on_참가자_scroll_scroll_started)
 	$"오른쪽패널/Scroll도착".get_v_scroll_bar().scrolling.connect(_on_도착지점_scroll_scroll_started)
-	for i in Settings.시작칸수:
+	for i in 사다리게임.시작칸수:
 		참가자추가하기()
 
 func _process(_delta: float) -> void:
@@ -67,8 +67,8 @@ var key2fn = {
 	KEY_PAGEUP:_on_fov_inc_pressed,
 	KEY_PAGEDOWN:_on_fov_dec_pressed,
 
-	KEY_INSERT:참가자추가하기,
-	KEY_DELETE:마지막참가자제거하기,
+	KEY_INSERT:_on_참가자추가_pressed,
+	KEY_DELETE:_on_참가자제거_pressed,
 }
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:

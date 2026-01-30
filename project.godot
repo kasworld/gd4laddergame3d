@@ -16,11 +16,6 @@ run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
-[autoload]
-
-GlobalLib="*res://global/global_lib.gd"
-Settings="*res://global/settings.gd"
-
 [display]
 
 window/size/viewport_width=3840
