@@ -9,14 +9,30 @@ func _init(list :Array, shuffle_flag_a :bool = true) -> void:
 	iter_data = list.duplicate()
 	shuffle()
 
+func get_data(index :int) -> Variant:
+	return iter_data[index % iter_data.size()]
+
+func append_data(list :Array) -> void:
+	iter_data.append_array(list.duplicate())
+	shuffle()
+
 func shuffle() -> ListIter:
 	if shuffle_flag:
 		iter_data.shuffle()
-	curser = 0
+	reset_cursor()
 	return self
 
 func is_new_start() -> bool:
 	return curser == 0
+
+func reset_cursor() -> void:
+	curser = 0
+
+func get_progress_rate() -> float:
+	return float(curser)/float(iter_data.size()-1)
+
+func get_data_array() -> Array:
+	return iter_data
 
 func next() -> void:
 	curser += 1
@@ -27,7 +43,16 @@ func next() -> void:
 func get_current() -> Variant:
 	return iter_data[curser]
 
-func get_next() -> Variant:
+func get_current_and_step_next() -> Variant:
 	var rtn = get_current()
 	next()
 	return rtn
+
+func get_size() -> int:
+	return iter_data.size()
+
+func get_itered_slice() -> Array:
+	return iter_data.slice(0,curser)
+
+func get_unitered_slice() -> Array:
+	return iter_data.slice(curser)

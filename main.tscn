@@ -1,90 +1,90 @@
-[gd_scene load_steps=4 format=3 uid="uid://bsavrfrgowwjy"]
+[gd_scene format=3 uid="uid://bsavrfrgowwjy"]
 
 [ext_resource type="Script" uid="uid://smn5xn33ln25" path="res://main.gd" id="1_p4pjj"]
 [ext_resource type="Theme" uid="uid://dt7yd8h3u1hqh" path="res://사다리타기.tres" id="2_l2p67"]
 [ext_resource type="PackedScene" uid="uid://ces3a6yv0c5fi" path="res://moving_carmera_light/moving_camera_light.tscn" id="3_h2yge"]
 
-[node name="Main" type="Node3D"]
+[node name="Main" type="Node3D" unique_id=1291196586]
 script = ExtResource("1_p4pjj")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=453338580]
 shadow_enabled = true
 sky_mode = 1
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=915331623]
 shadow_enabled = true
 
-[node name="왼쪽패널" type="VBoxContainer" parent="."]
+[node name="왼쪽패널" type="VBoxContainer" parent="." unique_id=2083238648]
 offset_right = 40.0
 offset_bottom = 40.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("2_l2p67")
 
-[node name="시야변경" type="Button" parent="왼쪽패널"]
+[node name="시야변경" type="Button" parent="왼쪽패널" unique_id=1469622828]
 layout_mode = 2
 text = "Enter:시야변경"
 
-[node name="참가자추가" type="Button" parent="왼쪽패널"]
+[node name="참가자추가" type="Button" parent="왼쪽패널" unique_id=1841925390]
 layout_mode = 2
 text = "Ins:추가하기"
 
-[node name="참가자제거" type="Button" parent="왼쪽패널"]
+[node name="참가자제거" type="Button" parent="왼쪽패널" unique_id=789557809]
 layout_mode = 2
 text = " Del: 제거하기"
 
-[node name="Scroll출발" type="ScrollContainer" parent="왼쪽패널"]
+[node name="Scroll출발" type="ScrollContainer" parent="왼쪽패널" unique_id=758829466]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="출발목록" type="VBoxContainer" parent="왼쪽패널/Scroll출발"]
+[node name="출발목록" type="VBoxContainer" parent="왼쪽패널/Scroll출발" unique_id=1491697951]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="오른쪽패널" type="VBoxContainer" parent="."]
+[node name="오른쪽패널" type="VBoxContainer" parent="." unique_id=665354998]
 offset_right = 40.0
 offset_bottom = 40.0
 theme = ExtResource("2_l2p67")
 
-[node name="만들기" type="Button" parent="오른쪽패널"]
+[node name="만들기" type="Button" parent="오른쪽패널" unique_id=1031206336]
 layout_mode = 2
 text = "사다리만들기"
 
-[node name="풀기" type="Button" parent="오른쪽패널"]
+[node name="풀기" type="Button" parent="오른쪽패널" unique_id=243219962]
 layout_mode = 2
 text = "사다리타기"
 
-[node name="깜빡이기" type="CheckButton" parent="오른쪽패널"]
+[node name="깜빡이기" type="CheckButton" parent="오른쪽패널" unique_id=469163575]
 layout_mode = 2
 text = "깜빡이기"
 
-[node name="Scroll도착" type="ScrollContainer" parent="오른쪽패널"]
+[node name="Scroll도착" type="ScrollContainer" parent="오른쪽패널" unique_id=1280454910]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="도착목록" type="VBoxContainer" parent="오른쪽패널/Scroll도착"]
+[node name="도착목록" type="VBoxContainer" parent="오른쪽패널/Scroll도착" unique_id=244085220]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="사다리" type="Node3D" parent="."]
+[node name="사다리" type="Node3D" parent="." unique_id=1860092501]
 
-[node name="세로기둥" type="Node3D" parent="사다리"]
+[node name="세로기둥" type="Node3D" parent="사다리" unique_id=387465661]
 
-[node name="출발목록" type="Node3D" parent="사다리"]
+[node name="출발목록" type="Node3D" parent="사다리" unique_id=267558287]
 
-[node name="도착목록" type="Node3D" parent="사다리"]
+[node name="도착목록" type="Node3D" parent="사다리" unique_id=34359149]
 
-[node name="문제길" type="Node3D" parent="사다리"]
+[node name="문제길" type="Node3D" parent="사다리" unique_id=1796078130]
 
-[node name="풀이길" type="Node3D" parent="사다리"]
+[node name="풀이길" type="Node3D" parent="사다리" unique_id=734294955]
 
-[node name="Timer깜빡이" type="Timer" parent="."]
+[node name="Timer깜빡이" type="Timer" parent="." unique_id=1957388829]
 
-[node name="FixedCameraLight" parent="." instance=ExtResource("3_h2yge")]
+[node name="FixedCameraLight" parent="." unique_id=383744815 instance=ExtResource("3_h2yge")]
 
-[node name="MovingCameraLightAround" parent="." instance=ExtResource("3_h2yge")]
+[node name="MovingCameraLightAround" parent="." unique_id=234754982 instance=ExtResource("3_h2yge")]
 
-[node name="MovingCameraLightHober" parent="." instance=ExtResource("3_h2yge")]
+[node name="MovingCameraLightHober" parent="." unique_id=909872986 instance=ExtResource("3_h2yge")]
 
 [connection signal="pressed" from="왼쪽패널/시야변경" to="." method="_on_시야변경_pressed"]
 [connection signal="pressed" from="왼쪽패널/참가자추가" to="." method="_on_참가자추가_pressed"]
