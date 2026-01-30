@@ -1,8 +1,9 @@
 [gd_scene format=3 uid="uid://bsavrfrgowwjy"]
 
 [ext_resource type="Script" uid="uid://smn5xn33ln25" path="res://main.gd" id="1_p4pjj"]
-[ext_resource type="Theme" uid="uid://dt7yd8h3u1hqh" path="res://사다리타기.tres" id="2_l2p67"]
+[ext_resource type="Theme" uid="uid://dt7yd8h3u1hqh" path="res://사다리게임/사다리타기.tres" id="2_l2p67"]
 [ext_resource type="PackedScene" uid="uid://ces3a6yv0c5fi" path="res://moving_carmera_light/moving_camera_light.tscn" id="3_h2yge"]
+[ext_resource type="PackedScene" uid="uid://dl14flc0fkeyt" path="res://axis_arrow_3d/axis_arrow_3d.tscn" id="4_1bvp3"]
 
 [node name="Main" type="Node3D" unique_id=1291196586]
 script = ExtResource("1_p4pjj")
@@ -20,10 +21,6 @@ offset_bottom = 40.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("2_l2p67")
-
-[node name="시야변경" type="Button" parent="왼쪽패널" unique_id=1469622828]
-layout_mode = 2
-text = "Enter:시야변경"
 
 [node name="참가자추가" type="Button" parent="왼쪽패널" unique_id=1841925390]
 layout_mode = 2
@@ -45,6 +42,32 @@ size_flags_horizontal = 3
 offset_right = 40.0
 offset_bottom = 40.0
 theme = ExtResource("2_l2p67")
+
+[node name="끝내기" type="Button" parent="오른쪽패널" unique_id=1048553347]
+layout_mode = 2
+text = "끝내기"
+
+[node name="카메라변경" type="Button" parent="오른쪽패널" unique_id=1262545182]
+layout_mode = 2
+text = "카메라변경"
+
+[node name="FOV inc" type="Button" parent="오른쪽패널" unique_id=707752656]
+layout_mode = 2
+text = "FOV inc"
+
+[node name="FOV dec" type="Button" parent="오른쪽패널" unique_id=96130199]
+layout_mode = 2
+text = "FOV dec"
+
+[node name="LabelPerformance" type="Label" parent="오른쪽패널" unique_id=1366601294]
+visible = false
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="LabelInfo" type="Label" parent="오른쪽패널" unique_id=1220518434]
+visible = false
+layout_mode = 2
+autowrap_mode = 3
 
 [node name="만들기" type="Button" parent="오른쪽패널" unique_id=1031206336]
 layout_mode = 2
@@ -86,9 +109,14 @@ size_flags_horizontal = 3
 
 [node name="MovingCameraLightHober" parent="." unique_id=909872986 instance=ExtResource("3_h2yge")]
 
-[connection signal="pressed" from="왼쪽패널/시야변경" to="." method="_on_시야변경_pressed"]
+[node name="AxisArrow3D" parent="." unique_id=700798448 instance=ExtResource("4_1bvp3")]
+
 [connection signal="pressed" from="왼쪽패널/참가자추가" to="." method="_on_참가자추가_pressed"]
 [connection signal="pressed" from="왼쪽패널/참가자제거" to="." method="_on_참가자제거_pressed"]
+[connection signal="pressed" from="오른쪽패널/끝내기" to="." method="_on_끝내기_pressed"]
+[connection signal="pressed" from="오른쪽패널/카메라변경" to="." method="_on_카메라변경_pressed"]
+[connection signal="pressed" from="오른쪽패널/FOV inc" to="." method="_on_fov_inc_pressed"]
+[connection signal="pressed" from="오른쪽패널/FOV dec" to="." method="_on_fov_dec_pressed"]
 [connection signal="pressed" from="오른쪽패널/만들기" to="." method="_on_만들기_pressed"]
 [connection signal="pressed" from="오른쪽패널/풀기" to="." method="_on_풀기_pressed"]
 [connection signal="toggled" from="오른쪽패널/깜빡이기" to="." method="_on_깜빡이기_toggled"]

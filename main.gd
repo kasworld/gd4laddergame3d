@@ -1,5 +1,90 @@
 extends Node3D
 
+const WorldSize := Vector3(160,90,80)
+
+func on_viewport_size_changed() -> void:
+	var vp_size := get_viewport().get_visible_rect().size
+	var 짧은길이 :float = min(vp_size.x, vp_size.y)
+	var panel_size := Vector2(vp_size.x/2 - 짧은길이/2, vp_size.y)
+	$"왼쪽패널".size = panel_size
+	$"왼쪽패널".custom_minimum_size = panel_size
+	$오른쪽패널.size = panel_size
+	$"오른쪽패널".custom_minimum_size = panel_size
+	$오른쪽패널.position = Vector2(vp_size.x/2 + 짧은길이/2, 0)
+
+func label_demo() -> void:
+	if $"오른쪽패널/LabelPerformance".visible:
+		$"오른쪽패널/LabelPerformance".text = """%d FPS (%.2f mspf)
+Currently rendering: occlusion culling:%s
+%d objects
+%dK primitive indices
+%d draw calls""" % [
+		Engine.get_frames_per_second(),1000.0 / Engine.get_frames_per_second(),
+		get_tree().root.use_occlusion_culling,
+		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME),
+		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME) * 0.001,
+		RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME),
+		]
+	if $"오른쪽패널/LabelInfo".visible:
+		$"오른쪽패널/LabelInfo".text = "%s" % [ MovingCameraLight.GetCurrentCamera() ]
+
+func _ready() -> void:
+	on_viewport_size_changed()
+	get_viewport().size_changed.connect(on_viewport_size_changed)
+
+	$OmniLight3D.omni_range = WorldSize.length()*3
+	$FixedCameraLight.set_center_pos_far(Vector3.ZERO, Vector3(0, 0, WorldSize.z),  WorldSize.length()*3)
+	$MovingCameraLightHober.set_center_pos_far(Vector3.ZERO, Vector3(0, 0, WorldSize.z),  WorldSize.length()*3)
+	$MovingCameraLightAround.set_center_pos_far(Vector3.ZERO, Vector3(0, 0, WorldSize.z),  WorldSize.length()*3)
+	$AxisArrow3D.set_colors().set_size(WorldSize.length()/20)
+
+	$"왼쪽패널/Scroll출발".get_v_scroll_bar().scrolling.connect(_on_참가자_scroll_scroll_started)
+	$"오른쪽패널/Scroll도착".get_v_scroll_bar().scrolling.connect(_on_도착지점_scroll_scroll_started)
+	for i in Settings.시작칸수:
+		참가자추가하기()
+
+func _process(_delta: float) -> void:
+	var now := Time.get_unix_time_from_system()
+	if $MovingCameraLightHober.is_current_camera():
+		$MovingCameraLightHober.move_hober_around_z(now/2.3, Vector3.ZERO, WorldSize.length()/2, WorldSize.length()/4 )
+	elif $MovingCameraLightAround.is_current_camera():
+		$MovingCameraLightAround.move_wave_around_y(now/2.3, Vector3.ZERO, WorldSize.length()/2, WorldSize.length()/4 )
+
+	label_demo()
+
+func _on_카메라변경_pressed() -> void:
+	MovingCameraLight.NextCamera()
+func _on_끝내기_pressed() -> void:
+	get_tree().quit()
+func _on_fov_inc_pressed() -> void:
+	MovingCameraLight.GetCurrentCamera().camera_fov_inc()
+func _on_fov_dec_pressed() -> void:
+	MovingCameraLight.GetCurrentCamera().camera_fov_dec()
+
+var key2fn = {
+	KEY_ESCAPE:_on_끝내기_pressed,
+	KEY_ENTER:_on_카메라변경_pressed,
+	KEY_PAGEUP:_on_fov_inc_pressed,
+	KEY_PAGEDOWN:_on_fov_dec_pressed,
+
+	KEY_INSERT:참가자추가하기,
+	KEY_DELETE:마지막참가자제거하기,
+}
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed:
+		var fn = key2fn.get(event.keycode)
+		if fn != null:
+			fn.call()
+		if $FixedCameraLight.is_current_camera():
+			var fi = FlyNode3D.Key2Info.get(event.keycode)
+			if fi != null:
+				FlyNode3D.fly_node3d($FixedCameraLight, fi)
+	elif event is InputEventMouseButton and event.is_pressed():
+		pass
+
+
+############################
+
 @onready var 참가자들 = $"왼쪽패널/Scroll출발/출발목록"
 @onready var 도착지점들 = $"오른쪽패널/Scroll도착/도착목록"
 @onready var 사다리문제 = $"사다리/문제길"
@@ -7,39 +92,13 @@ extends Node3D
 
 var 화살표 = preload("res://arrow_3d/arrow_3d.tscn")
 
-var 밝은색목록 :Array # [color, name]
+var 밝은색목록 :Array = NamedColors.filter_light_color_list()
 var 참가자색 :Array[Color]
 var 기본색 : Color = Color.DIM_GRAY
 var 사다리자료 :사다리Lib
 var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
 var 깜빡이는중 :bool
 var 현재깜빡이는그룹번호 :int # group_name =  "%d" % 참가자번호
-
-func _ready() -> void:
-	밝은색목록 = NamedColors.filter_light_color_list()
-	var vp_size = get_viewport().get_visible_rect().size
-	var r = min(vp_size.x,vp_size.y)/2
-	RenderingServer.set_default_clear_color( GlobalLib.colors.default_clear)
-
-	$"왼쪽패널".size = Vector2(vp_size.x/2 -r, vp_size.y)
-	$오른쪽패널.size = Vector2(vp_size.x/2 -r, vp_size.y)
-	$오른쪽패널.position = Vector2(vp_size.x/2 + r, 0)
-	$"왼쪽패널/Scroll출발".get_v_scroll_bar().scrolling.connect(_on_참가자_scroll_scroll_started)
-	$"오른쪽패널/Scroll도착".get_v_scroll_bar().scrolling.connect(_on_도착지점_scroll_scroll_started)
-	for i in Settings.시작칸수:
-		참가자추가하기()
-	reset_camera_pos()
-
-var WorldSize :Vector3
-func reset_camera_pos()->void:
-	var 사다리수 = 사다리용숫자들()
-	var r = 사다리수.중심과의거리 *3
-	WorldSize = Vector3(r,r,r)
-	$OmniLight3D.position = Vector3(0,0,WorldSize.length())
-	$OmniLight3D.omni_range = WorldSize.length()*2
-	$FixedCameraLight.set_center_pos_far(Vector3.ZERO, 	Vector3(0, 0, WorldSize.z*2), WorldSize.length()*2)
-	$MovingCameraLightHober.set_center_pos_far( Vector3.ZERO, Vector3(0, 0, WorldSize.z), WorldSize.length()*2)
-	$MovingCameraLightAround.set_center_pos_far( Vector3.ZERO, Vector3(0, 0, WorldSize.z), WorldSize.length()*2)
 
 func 참가자추가하기() -> void:
 	var i = 사다리용숫자들().세로줄수
@@ -117,7 +176,6 @@ func 위치3D정리하기() -> void:
 	$"오른쪽패널/만들기".disabled = false
 	$"오른쪽패널/풀기".disabled = true
 	$"오른쪽패널/깜빡이기".disabled = true
-	reset_camera_pos()
 
 # 중점을 돌려준다.
 func 가로기둥위치(x :int, y :int) -> Vector3:
@@ -253,33 +311,6 @@ func 깜빡이기_종료() -> void:
 		get_tree().call_group(group_name, "show")
 	현재깜빡이는그룹번호 = 0
 
-func _process(_delta: float) -> void:
-	var t = Time.get_unix_time_from_system() /-3.0
-	if $MovingCameraLightHober.is_current_camera():
-		$MovingCameraLightHober.move_hober_around_z(t, Vector3.ZERO, (WorldSize.x+WorldSize.y)/2, WorldSize.length()*0.6 )
-	elif $MovingCameraLightAround.is_current_camera():
-		$MovingCameraLightAround.move_wave_around_y(t, Vector3.ZERO, (WorldSize.x+WorldSize.y)/2, WorldSize.length()*0.6 )
-
-var key2fn = {
-	KEY_ESCAPE:_on_button_esc_pressed,
-	KEY_ENTER:_on_카메라변경_pressed,
-	KEY_PAGEUP:_on_button_fov_up_pressed,
-	KEY_PAGEDOWN:_on_button_fov_down_pressed,
-	KEY_INSERT:참가자추가하기,
-	KEY_DELETE:마지막참가자제거하기,
-}
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed:
-		var fn = key2fn.get(event.keycode)
-		if fn != null:
-			fn.call()
-		if $FixedCameraLight.is_current_camera():
-			var fi = FlyNode3D.Key2Info.get(event.keycode)
-			if fi != null:
-				FlyNode3D.fly_node3d($FixedCameraLight, fi)
-
-	elif event is InputEventMouseButton and event.is_pressed():
-		pass
 
 var dragging = false
 func _input(event):
@@ -298,17 +329,6 @@ func _input(event):
 		$Camera3D.position = $Camera3D.position.rotated( Vector3.RIGHT, -y )
 		$Camera3D.look_at(Vector3.ZERO)
 
-func _on_카메라변경_pressed() -> void:
-	MovingCameraLight.NextCamera()
-
-func _on_button_fov_up_pressed() -> void:
-	MovingCameraLight.GetCurrentCamera().camera_fov_inc()
-
-func _on_button_fov_down_pressed() -> void:
-	MovingCameraLight.GetCurrentCamera().camera_fov_dec()
-
-func _on_button_esc_pressed() -> void:
-	get_tree().quit()
 
 func _on_참가자추가_pressed() -> void:
 	참가자추가하기()
