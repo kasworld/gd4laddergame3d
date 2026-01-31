@@ -95,6 +95,7 @@ func _on_도착지점_scroll_scroll_started() -> void:
 	$"왼쪽패널/Scroll출발".scroll_vertical = $"오른쪽패널/Scroll도착".scroll_vertical
 
 func _on_만들기_pressed() -> void:
+	$"사다리게임".init(참가자정보)
 	$"사다리게임".사다리문제그리기()
 
 func _on_풀기_pressed() -> void:
@@ -115,9 +116,9 @@ const 시작칸수 = 4
 const 최대칸수 = 30
 
 var 밝은색목록 :Array = NamedColors.filter_light_color_list()
-var 참가자색 :Array[Color]
+var 참가자정보 :Array # [출발이름, 색, 도착이름]
 var 기본색 : Color = Color.DIM_GRAY
-var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
+#var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
 
 
 func LineEdit만들기(t :String, co :Color) -> LineEdit:
@@ -136,13 +137,13 @@ func 참가자추가하기() -> void:
 	var i = $"왼쪽패널/Scroll출발/출발목록".get_child_count()
 	if i >= 최대칸수:
 		return
-	참가자색.append(밝은색목록.pick_random())
-
-	var 참가자 = LineEdit만들기("출발%d" % [i+1], 참가자색[i])
+	var rtn := ["출발%d" % [i+1], 밝은색목록.pick_random(), "도착%d" % [i+1] ]
+	참가자정보.append(rtn)
+	var 참가자 = LineEdit만들기(rtn[0], rtn[1])
 	참가자.text_changed.connect(func(t :String):	$"출발목록".get_child(i).text = t)
 	참가자.text_submitted.connect(func(_t :String):참가자.release_focus())
 	$"왼쪽패널/Scroll출발/출발목록".add_child(참가자)
-	var 도착점 = LineEdit만들기("도착%d" % [i+1], 기본색)
+	var 도착점 = LineEdit만들기(rtn[2], 기본색)
 	도착점.text_changed.connect(func(t :String):$"도착목록".get_child(i).text = t)
 	도착점.text_submitted.connect(func(_t :String):도착점.release_focus())
 	$"오른쪽패널/Scroll도착/도착목록".add_child(도착점)
@@ -151,7 +152,7 @@ func 마지막참가자제거하기() -> void:
 	var 현재참가자수 = $"왼쪽패널/Scroll출발/출발목록".get_child_count()
 	if 현재참가자수 <= 최소칸수:
 		return
-	참가자색.pop_back()
+	참가자정보.pop_back()
 	var 마지막수 = 현재참가자수-1
 	$"왼쪽패널/Scroll출발/출발목록".remove_child($"왼쪽패널/Scroll출발/출발목록".get_child(마지막수))
 	$"오른쪽패널/Scroll도착/도착목록".remove_child($"오른쪽패널/Scroll도착/도착목록".get_child(마지막수))
