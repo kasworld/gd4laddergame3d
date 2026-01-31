@@ -102,19 +102,21 @@ func _on_풀기_pressed() -> void:
 
 func _on_깜빡이기_toggled(toggled_on: bool) -> void:
 	if toggled_on:
-		$"Timer깜빡이".start(1.0)
+		$"Timer깜빡이".start(5.0)
 	else:
 		$"Timer깜빡이".stop()
-		$"사다리게임".깜빡이기_종료()
+		$"사다리게임".모든길보기()
 
+var 길번호 :int
 func _on_timer깜빡이_timeout() -> void:
-	$"사다리게임".깜빡이기()
+	$"사다리게임".길하나보기(길번호)
+	길번호 = (길번호+1) % 참가자정보.size()
 
 const 최소칸수 = 3
 const 시작칸수 = 4
 const 최대칸수 = 30
 
-var 밝은색목록 :Array = NamedColors.filter_light_color_list()
+var 밝은색목록 :ListIter = ListIter.new(NamedColors.filter_light_color_list())
 var 참가자정보 :Array # [출발이름, 색, 도착이름]
 var 기본색 : Color = Color.DIM_GRAY
 #var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
@@ -136,7 +138,7 @@ func 참가자추가하기() -> void:
 	var i = $"왼쪽패널/Scroll출발/출발목록".get_child_count()
 	if i >= 최대칸수:
 		return
-	var rtn := ["출발%d" % [i+1], 밝은색목록.pick_random(), "도착%d" % [i+1] ]
+	var rtn := ["출발%d" % [i+1], 밝은색목록.get_current_and_step_next(), "도착%d" % [i+1] ]
 	참가자정보.append(rtn)
 	var 참가자 = LineEdit만들기(rtn[0], rtn[1])
 	참가자.text_changed.connect(func(t :String):	$"출발목록".get_child(i).text = t)

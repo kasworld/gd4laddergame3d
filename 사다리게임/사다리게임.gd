@@ -9,12 +9,9 @@ var 참가자정보 :Array # [출발이름, 색, 도착이름]
 var 사다리자료 :사다리Lib
 var 기본색 : Color = Color.DIM_GRAY
 
-var 깜빡이는중 :bool
-var 현재깜빡이는그룹번호 :int # group_name =  "%d" % 참가자번호
-
 var 기둥반지름 :float
 var 화살표반지름 :float
-var 가로길칸배수 :int = 1
+var 가로길칸배수 :int = 2
 var 세로줄수 :int
 var 가로줄수 :int
 var 중심과의거리 :float
@@ -28,8 +25,8 @@ var 세로화살표위치보정 :Vector3
 func init(sz :Vector3, 참가자정보_a :Array) -> 사다리게임:
 	cabinet_size = sz
 	참가자정보 = 참가자정보_a
-	기둥반지름 = cabinet_size.length()/200
-	화살표반지름 = 기둥반지름
+	기둥반지름 = cabinet_size.length()/300
+	화살표반지름 = 기둥반지름 *1.5
 	세로줄수 = 참가자정보.size()
 	가로줄수 = 세로줄수 *가로길칸배수
 	중심과의거리 = cabinet_size.z/2
@@ -86,7 +83,7 @@ func 사다리문제그리기() -> void:
 	for y in 가로줄수:
 		for x in 세로줄수:
 			if 사다리자료.자료[x%세로줄수][y].왼쪽연결길:
-				var 가로줄 = 기둥만들기(세로줄간거리, 기둥반지름, Color.WHITE)
+				var 가로줄 = 기둥만들기(세로줄간거리, 기둥반지름, 기본색)
 				가로줄.rotate_z(PI/2)
 				가로줄.rotate_y(기둥간각도 * (x-0.5))
 				가로줄.position = 가로기둥위치(x,y)
@@ -106,7 +103,7 @@ func 사다리풀이그리기() -> void:
 		# 아래로 내려가면서 좌우로 이동
 		var oldy = 0
 		# 시작 세로줄 그리기
-		화살표추가_아래쪽(참가자번호,현재줄번호,0, 1)
+		화살표추가_아래쪽(참가자번호,현재줄번호,-1, 0)
 		for y in 가로줄수:
 			if 사다리자료.자료[현재줄번호][y].왼쪽연결길 == true: # 왼쪽으로 한칸 이동
 				# 현재까지의 세로줄 그리기
@@ -173,20 +170,18 @@ func 화살표추가_오른쪽(참가자번호 :int, x1 :int, x2 :int , y :int) 
 	a.add_to_group("%d" % 참가자번호)
 	return a
 
-func 깜빡이기() -> void:
+func 길하나보기(n :int) -> void:
 	for i in 세로줄수:
 		var group_name = "%d" % i
-		if i == 현재깜빡이는그룹번호:
+		if i == n:
 			get_tree().call_group(group_name, "show")
 		else:
 			get_tree().call_group(group_name, "hide")
-	현재깜빡이는그룹번호 = (현재깜빡이는그룹번호+1) % 세로줄수
 
-func 깜빡이기_종료() -> void:
+func 모든길보기() -> void:
 	for i in 세로줄수:
 		var group_name = "%d" % i
 		get_tree().call_group(group_name, "show")
-	현재깜빡이는그룹번호 = 0
 
 func Label3D만들기(t :String, co :Color) -> Label3D:
 	var rtn = Label3D.new()
