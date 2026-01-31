@@ -95,7 +95,7 @@ func _on_도착지점_scroll_scroll_started() -> void:
 	$"왼쪽패널/Scroll출발".scroll_vertical = $"오른쪽패널/Scroll도착".scroll_vertical
 
 func _on_만들기_pressed() -> void:
-	$"사다리게임".init(참가자정보)
+	$"사다리게임".init(WorldSize, 참가자정보)
 	$"사다리게임".사다리문제그리기()
 
 func _on_풀기_pressed() -> void:

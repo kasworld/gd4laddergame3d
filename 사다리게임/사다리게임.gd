@@ -1,6 +1,10 @@
 extends Node3D
 class_name 사다리게임
 
+static func make_pos_by_rad_r_3d(rad:float, r :float, y :float =0)->Vector3:
+	return Vector3(sin(rad)*r, y, cos(rad)*r)
+
+var cabinet_size :Vector3
 var 참가자정보 :Array # [출발이름, 색, 도착이름]
 var 사다리자료 :사다리Lib
 var 기본색 : Color = Color.DIM_GRAY
@@ -8,8 +12,8 @@ var 기본색 : Color = Color.DIM_GRAY
 var 깜빡이는중 :bool
 var 현재깜빡이는그룹번호 :int # group_name =  "%d" % 참가자번호
 
-var 기둥반지름 := 1.0
-var 화살표반지름 := 3.0
+var 기둥반지름 :float
+var 화살표반지름 :float
 var 가로길칸배수 :int = 3
 var 세로줄수 :int
 var 가로줄수 :int
@@ -21,30 +25,26 @@ var 세로줄간거리 :float
 var 가로화살표위치보정 :Vector3
 var 세로화살표위치보정 :Vector3
 
-func init(참가자정보_a :Array) -> 사다리게임:
+func init(sz :Vector3, 참가자정보_a :Array) -> 사다리게임:
+	cabinet_size = sz
 	참가자정보 = 참가자정보_a
+	기둥반지름 = cabinet_size.length()/200
+	화살표반지름 = 기둥반지름
 	세로줄수 = 참가자정보.size()
 	가로줄수 = 세로줄수 *가로길칸배수
-	중심과의거리 = 50.0 * sqrt(세로줄수)
+	중심과의거리 = cabinet_size.z/2
 	기둥간각도 = 2.0*PI/세로줄수
-	기둥길이 = 세로줄수 * 50.0
+	기둥길이 = cabinet_size.y
 	가로줄간거리 = 기둥길이/가로줄수
 	세로줄간거리 = 중심과의거리 * sin(기둥간각도/2) *2
 	가로화살표위치보정 = Vector3(0, 화살표반지름 *1.0, 0)
 	세로화살표위치보정 = Vector3(0, 화살표반지름, 0)
 	for i in 참가자정보.size():
-		$"세로기둥".add_child(기둥만들기(30, 기둥반지름, 기본색))
+		$"세로기둥".add_child(기둥만들기(기둥길이, 기둥반지름, 기본색))
 		$"출발목록".add_child(Label3D만들기(참가자정보[i][0], 참가자정보[i][1]))
 		$"도착목록".add_child(Label3D만들기(참가자정보[i][2], 기본색))
 	위치3D정리하기()
 	return self
-
-#func 참가자추가하기() -> void:
-	#var i = 세로줄수
-	#$"세로기둥".add_child(기둥만들기(30, 기둥반지름, 기본색))
-	#$"출발목록".add_child(Label3D만들기(참가자정보[i][0], 참가자정보[i][1]))
-	#$"도착목록".add_child(Label3D만들기(참가자정보[i][2], 기본색))
-	#위치3D정리하기()
 
 func 위치3D정리하기() -> void:
 	for i in 세로줄수:
@@ -179,8 +179,6 @@ func 깜빡이기_종료() -> void:
 		get_tree().call_group(group_name, "show")
 	현재깜빡이는그룹번호 = 0
 
-func make_pos_by_rad_r_3d(rad:float, r :float, y :float =0)->Vector3:
-	return Vector3(sin(rad)*r, y, cos(rad)*r)
 
 func Label3D만들기(t :String, co :Color) -> Label3D:
 	var rtn = Label3D.new()
