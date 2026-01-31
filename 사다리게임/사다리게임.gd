@@ -14,7 +14,7 @@ var 현재깜빡이는그룹번호 :int # group_name =  "%d" % 참가자번호
 
 var 기둥반지름 :float
 var 화살표반지름 :float
-var 가로길칸배수 :int = 3
+var 가로길칸배수 :int = 1
 var 세로줄수 :int
 var 가로줄수 :int
 var 중심과의거리 :float
@@ -179,12 +179,11 @@ func 깜빡이기_종료() -> void:
 		get_tree().call_group(group_name, "show")
 	현재깜빡이는그룹번호 = 0
 
-
 func Label3D만들기(t :String, co :Color) -> Label3D:
 	var rtn = Label3D.new()
 	rtn.text = t
 	rtn.modulate = co
-	rtn.pixel_size = 0.5
+	rtn.pixel_size = cabinet_size.length()/세로줄수/100
 	#rtn.no_depth_test = true
 	rtn.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	return rtn
