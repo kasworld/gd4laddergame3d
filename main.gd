@@ -40,7 +40,7 @@ func _ready() -> void:
 
 	$"왼쪽패널/Scroll출발".get_v_scroll_bar().scrolling.connect(_on_참가자_scroll_scroll_started)
 	$"오른쪽패널/Scroll도착".get_v_scroll_bar().scrolling.connect(_on_도착지점_scroll_scroll_started)
-	for i in 사다리게임.시작칸수:
+	for i in 시작칸수:
 		참가자추가하기()
 
 func _process(_delta: float) -> void:
@@ -82,18 +82,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton and event.is_pressed():
 		pass
 
-
-############################
-
-@onready var 참가자들 = $"왼쪽패널/Scroll출발/출발목록"
-@onready var 도착지점들 = $"오른쪽패널/Scroll도착/도착목록"
-
-
 func _on_참가자추가_pressed() -> void:
-	$"사다리게임".참가자추가하기()
+	참가자추가하기()
 
 func _on_참가자제거_pressed() -> void:
-	$"사다리게임".마지막참가자제거하기()
+	마지막참가자제거하기()
 
 func _on_참가자_scroll_scroll_started() -> void:
 	$"오른쪽패널/Scroll도착".scroll_vertical = $"왼쪽패널/Scroll출발".scroll_vertical
@@ -116,3 +109,49 @@ func _on_깜빡이기_toggled(toggled_on: bool) -> void:
 
 func _on_timer깜빡이_timeout() -> void:
 	$"사다리게임".깜빡이기()
+
+const 최소칸수 = 3
+const 시작칸수 = 4
+const 최대칸수 = 30
+
+var 밝은색목록 :Array = NamedColors.filter_light_color_list()
+var 참가자색 :Array[Color]
+var 기본색 : Color = Color.DIM_GRAY
+var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
+
+
+func LineEdit만들기(t :String, co :Color) -> LineEdit:
+	var rtn = LineEdit.new()
+	rtn.text = t
+	rtn.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	rtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rtn.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	rtn.max_length = 10
+	rtn.add_theme_color_override("font_color", co)
+	rtn.add_theme_color_override("font_outline_color",Color.WHITE)
+	rtn.add_theme_constant_override("outline_size",1)
+	return rtn
+
+func 참가자추가하기() -> void:
+	var i = $"왼쪽패널/Scroll출발/출발목록".get_child_count()
+	if i >= 최대칸수:
+		return
+	참가자색.append(밝은색목록.pick_random())
+
+	var 참가자 = LineEdit만들기("출발%d" % [i+1], 참가자색[i])
+	참가자.text_changed.connect(func(t :String):	$"출발목록".get_child(i).text = t)
+	참가자.text_submitted.connect(func(_t :String):참가자.release_focus())
+	$"왼쪽패널/Scroll출발/출발목록".add_child(참가자)
+	var 도착점 = LineEdit만들기("도착%d" % [i+1], 기본색)
+	도착점.text_changed.connect(func(t :String):$"도착목록".get_child(i).text = t)
+	도착점.text_submitted.connect(func(_t :String):도착점.release_focus())
+	$"오른쪽패널/Scroll도착/도착목록".add_child(도착점)
+
+func 마지막참가자제거하기() -> void:
+	var 현재참가자수 = $"왼쪽패널/Scroll출발/출발목록".get_child_count()
+	if 현재참가자수 <= 최소칸수:
+		return
+	참가자색.pop_back()
+	var 마지막수 = 현재참가자수-1
+	$"왼쪽패널/Scroll출발/출발목록".remove_child($"왼쪽패널/Scroll출발/출발목록".get_child(마지막수))
+	$"오른쪽패널/Scroll도착/도착목록".remove_child($"오른쪽패널/Scroll도착/도착목록".get_child(마지막수))
