@@ -4,7 +4,7 @@
 [ext_resource type="Theme" uid="uid://dt7yd8h3u1hqh" path="res://사다리게임/사다리타기.tres" id="2_l2p67"]
 [ext_resource type="PackedScene" uid="uid://ces3a6yv0c5fi" path="res://moving_carmera_light/moving_camera_light.tscn" id="3_h2yge"]
 [ext_resource type="PackedScene" uid="uid://dl14flc0fkeyt" path="res://axis_arrow_3d/axis_arrow_3d.tscn" id="4_1bvp3"]
-[ext_resource type="PackedScene" uid="uid://dsyfp4odtfton" path="res://사다리게임/사다리게임.tscn" id="5_lquwl"]
+[ext_resource type="PackedScene" uid="uid://clnf86bglf40d" path="res://glass_cabinet/glass_cabinet.tscn" id="6_7mycd"]
 
 [node name="Main" type="Node3D" unique_id=1291196586]
 script = ExtResource("1_p4pjj")
@@ -22,22 +22,6 @@ offset_bottom = 40.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("2_l2p67")
-
-[node name="참가자추가" type="Button" parent="왼쪽패널" unique_id=1841925390]
-layout_mode = 2
-text = "Ins:추가하기"
-
-[node name="참가자제거" type="Button" parent="왼쪽패널" unique_id=789557809]
-layout_mode = 2
-text = " Del: 제거하기"
-
-[node name="Scroll출발" type="ScrollContainer" parent="왼쪽패널" unique_id=758829466]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="출발목록" type="VBoxContainer" parent="왼쪽패널/Scroll출발" unique_id=1491697951]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="오른쪽패널" type="VBoxContainer" parent="." unique_id=665354998]
 offset_right = 40.0
@@ -78,18 +62,6 @@ text = "사다리만들기"
 layout_mode = 2
 text = "사다리타기"
 
-[node name="깜빡이기" type="CheckButton" parent="오른쪽패널" unique_id=469163575]
-layout_mode = 2
-text = "깜빡이기"
-
-[node name="Scroll도착" type="ScrollContainer" parent="오른쪽패널" unique_id=1280454910]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="도착목록" type="VBoxContainer" parent="오른쪽패널/Scroll도착" unique_id=244085220]
-layout_mode = 2
-size_flags_horizontal = 3
-
 [node name="Timer깜빡이" type="Timer" parent="." unique_id=1957388829]
 
 [node name="FixedCameraLight" parent="." unique_id=383744815 instance=ExtResource("3_h2yge")]
@@ -100,15 +72,12 @@ size_flags_horizontal = 3
 
 [node name="AxisArrow3D" parent="." unique_id=700798448 instance=ExtResource("4_1bvp3")]
 
-[node name="사다리게임" parent="." unique_id=746454374 instance=ExtResource("5_lquwl")]
+[node name="GlassCabinet" parent="." unique_id=382686767 instance=ExtResource("6_7mycd")]
 
-[connection signal="pressed" from="왼쪽패널/참가자추가" to="." method="_on_참가자추가_pressed"]
-[connection signal="pressed" from="왼쪽패널/참가자제거" to="." method="_on_참가자제거_pressed"]
 [connection signal="pressed" from="오른쪽패널/끝내기" to="." method="_on_끝내기_pressed"]
 [connection signal="pressed" from="오른쪽패널/카메라변경" to="." method="_on_카메라변경_pressed"]
 [connection signal="pressed" from="오른쪽패널/FOV inc" to="." method="_on_fov_inc_pressed"]
 [connection signal="pressed" from="오른쪽패널/FOV dec" to="." method="_on_fov_dec_pressed"]
 [connection signal="pressed" from="오른쪽패널/만들기" to="." method="_on_만들기_pressed"]
 [connection signal="pressed" from="오른쪽패널/풀기" to="." method="_on_풀기_pressed"]
-[connection signal="toggled" from="오른쪽패널/깜빡이기" to="." method="_on_깜빡이기_toggled"]
 [connection signal="timeout" from="Timer깜빡이" to="." method="_on_timer깜빡이_timeout"]

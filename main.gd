@@ -38,12 +38,10 @@ func _ready() -> void:
 	$MovingCameraLightAround.set_center_pos_far(Vector3.ZERO, Vector3(0, 0, WorldSize.z),  WorldSize.length()*3)
 	$AxisArrow3D.set_colors().set_size(WorldSize.length()/20)
 
-	$"왼쪽패널/Scroll출발".get_v_scroll_bar().scrolling.connect(_on_참가자_scroll_scroll_started)
-	$"오른쪽패널/Scroll도착".get_v_scroll_bar().scrolling.connect(_on_도착지점_scroll_scroll_started)
-	for i in 시작칸수:
-		참가자추가하기()
+	$GlassCabinet.init(WorldSize)
+	ladder_demo($GlassCabinet)
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var now := Time.get_unix_time_from_system()
 	if $MovingCameraLightHober.is_current_camera():
 		$MovingCameraLightHober.move_hober_around_z(now/2.3, Vector3.ZERO, WorldSize.length()/2, WorldSize.length()/4 )
@@ -51,6 +49,7 @@ func _process(_delta: float) -> void:
 		$MovingCameraLightAround.move_wave_around_y(now/2.3, Vector3.ZERO, WorldSize.length()/2, WorldSize.length()/4 )
 
 	label_demo()
+	ladder.rotate_y(delta/2)
 
 func _on_카메라변경_pressed() -> void:
 	MovingCameraLight.NextCamera()
@@ -66,9 +65,6 @@ var key2fn = {
 	KEY_ENTER:_on_카메라변경_pressed,
 	KEY_PAGEUP:_on_fov_inc_pressed,
 	KEY_PAGEDOWN:_on_fov_dec_pressed,
-
-	KEY_INSERT:_on_참가자추가_pressed,
-	KEY_DELETE:_on_참가자제거_pressed,
 }
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
@@ -82,78 +78,21 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton and event.is_pressed():
 		pass
 
-func _on_참가자추가_pressed() -> void:
-	참가자추가하기()
-
-func _on_참가자제거_pressed() -> void:
-	마지막참가자제거하기()
-
-func _on_참가자_scroll_scroll_started() -> void:
-	$"오른쪽패널/Scroll도착".scroll_vertical = $"왼쪽패널/Scroll출발".scroll_vertical
-
-func _on_도착지점_scroll_scroll_started() -> void:
-	$"왼쪽패널/Scroll출발".scroll_vertical = $"오른쪽패널/Scroll도착".scroll_vertical
-
-func _on_만들기_pressed() -> void:
-	$"사다리게임".init(WorldSize, 참가자정보)
-
-func _on_풀기_pressed() -> void:
-	$"사다리게임".사다리풀이그리기()
-
-func _on_깜빡이기_toggled(toggled_on: bool) -> void:
-	if toggled_on:
-		$"Timer깜빡이".start(5.0)
-	else:
-		$"Timer깜빡이".stop()
-		$"사다리게임".모든길보기()
-
+var ladder :사다리게임
 var 길번호 :int
-func _on_timer깜빡이_timeout() -> void:
-	$"사다리게임".길하나보기(길번호)
-	길번호 = (길번호+1) % 참가자정보.size()
-
-const 최소칸수 = 3
-const 시작칸수 = 4
-const 최대칸수 = 30
-
 var 밝은색목록 :ListIter = ListIter.new(NamedColors.filter_light_color_list())
-var 참가자정보 :Array # [출발이름, 색, 도착이름]
-var 기본색 : Color = Color.DIM_GRAY
-#var 이름들백업 :Array = [] # Array[출발점, 도착점] 문자열 보관
+func ladder_demo(gc :GlassCabinet) -> void:
+	gc.show_wall_box(false)
+	var 참가자정보 :Array
+	for i in 8:
+		참가자정보.append( ["출발%d" % [i+1], 밝은색목록.get_current_and_step_next(), "도착%d" % [i+1] ] )
 
+	ladder = preload("res://사다리게임/사다리게임.tscn").instantiate(
+		).init(WorldSize, 참가자정보)
+	gc.add_child(ladder)
+	ladder.사다리풀이그리기()
+	$"Timer깜빡이".start(3.0)
 
-func LineEdit만들기(t :String, co :Color) -> LineEdit:
-	var rtn = LineEdit.new()
-	rtn.text = t
-	rtn.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	rtn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	rtn.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	rtn.max_length = 10
-	rtn.add_theme_color_override("font_color", co)
-	rtn.add_theme_color_override("font_outline_color",Color.WHITE)
-	rtn.add_theme_constant_override("outline_size",1)
-	return rtn
-
-func 참가자추가하기() -> void:
-	var i = $"왼쪽패널/Scroll출발/출발목록".get_child_count()
-	if i >= 최대칸수:
-		return
-	var rtn := ["출발%d" % [i+1], 밝은색목록.get_current_and_step_next(), "도착%d" % [i+1] ]
-	참가자정보.append(rtn)
-	var 참가자 = LineEdit만들기(rtn[0], rtn[1])
-	참가자.text_changed.connect(func(t :String):	$"출발목록".get_child(i).text = t)
-	참가자.text_submitted.connect(func(_t :String):참가자.release_focus())
-	$"왼쪽패널/Scroll출발/출발목록".add_child(참가자)
-	var 도착점 = LineEdit만들기(rtn[2], 기본색)
-	도착점.text_changed.connect(func(t :String):$"도착목록".get_child(i).text = t)
-	도착점.text_submitted.connect(func(_t :String):도착점.release_focus())
-	$"오른쪽패널/Scroll도착/도착목록".add_child(도착점)
-
-func 마지막참가자제거하기() -> void:
-	var 현재참가자수 = $"왼쪽패널/Scroll출발/출발목록".get_child_count()
-	if 현재참가자수 <= 최소칸수:
-		return
-	참가자정보.pop_back()
-	var 마지막수 = 현재참가자수-1
-	$"왼쪽패널/Scroll출발/출발목록".remove_child($"왼쪽패널/Scroll출발/출발목록".get_child(마지막수))
-	$"오른쪽패널/Scroll도착/도착목록".remove_child($"오른쪽패널/Scroll도착/도착목록".get_child(마지막수))
+func _on_timer깜빡이_timeout() -> void:
+	ladder.길하나보기(길번호)
+	길번호 = (길번호+1) % ladder.참가자정보.size()
