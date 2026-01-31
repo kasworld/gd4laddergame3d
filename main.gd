@@ -96,7 +96,6 @@ func _on_도착지점_scroll_scroll_started() -> void:
 
 func _on_만들기_pressed() -> void:
 	$"사다리게임".init(WorldSize, 참가자정보)
-	$"사다리게임".사다리문제그리기()
 
 func _on_풀기_pressed() -> void:
 	$"사다리게임".사다리풀이그리기()

@@ -39,12 +39,25 @@ func init(sz :Vector3, 참가자정보_a :Array) -> 사다리게임:
 	세로줄간거리 = 중심과의거리 * sin(기둥간각도/2) *2
 	가로화살표위치보정 = Vector3(0, 화살표반지름 *1.0, 0)
 	세로화살표위치보정 = Vector3(0, 화살표반지름, 0)
+
+	clear()
 	for i in 참가자정보.size():
 		$"세로기둥".add_child(기둥만들기(기둥길이, 기둥반지름, 기본색))
 		$"출발목록".add_child(Label3D만들기(참가자정보[i][0], 참가자정보[i][1]))
 		$"도착목록".add_child(Label3D만들기(참가자정보[i][2], 기본색))
 	위치3D정리하기()
+	사다리문제그리기()
 	return self
+
+func clear() -> void:
+	for n in $"세로기둥".get_children():
+		$"세로기둥".remove_child(n)
+	for n in $"출발목록".get_children():
+		$"출발목록".remove_child(n)
+	for n in $"도착목록".get_children():
+		$"도착목록".remove_child(n)
+	for n in $"풀이길".get_children():
+		$"풀이길".remove_child(n)
 
 func 위치3D정리하기() -> void:
 	for i in 세로줄수:
@@ -82,9 +95,7 @@ func 사다리문제그리기() -> void:
 	$"풀이길".visible = false
 
 func 사다리풀이그리기() -> void:
-	#이름들백업 = []
 	for i in 세로줄수:
-		#이름들백업.append([s1,s2])
 		$"도착목록".get_child(사다리자료.참가자위치[i]).modulate = 참가자정보[i][1]
 	for n in $"풀이길".get_children():
 		$"풀이길".remove_child(n)
@@ -118,8 +129,6 @@ func 사다리풀이그리기() -> void:
 
 	#$"문제길".visible = false
 	$"풀이길".visible = true
-	#$"오른쪽패널/풀기".disabled = true
-	#$"오른쪽패널/깜빡이기".disabled = false
 
 # 중점을 돌려준다.
 func 세로화살표위치(x :int, y :int) -> Vector3:
